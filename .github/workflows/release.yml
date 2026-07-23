@@ -29,15 +29,6 @@ jobs:
           # Translation sources aren't distributed - only the compiled .mo files are.
           rm -rf build/po
 
-      - name: Compile translations
-        run: |
-          shopt -s nullglob
-          for po in src/po/*.po; do
-            lang=$(basename "$po" .po)
-            mkdir -p "build/locale/$lang/LC_MESSAGES"
-            msgfmt "$po" -o "build/locale/$lang/LC_MESSAGES/${UUID}.mo"
-          done
-
       - name: Package extension
         run: |
           cd build
