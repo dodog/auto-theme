@@ -25,7 +25,7 @@ jobs:
       - name: Stage extension files
         run: |
           mkdir -p build
-          cp -r . build/
+          cp -r /. build/
           # Translation sources aren't distributed - only the compiled .mo files are.
           rm -rf build/po
 
