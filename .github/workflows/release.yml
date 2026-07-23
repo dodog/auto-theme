@@ -22,24 +22,26 @@ jobs:
       - name: Install gettext (for msgfmt)
         run: sudo apt-get update && sudo apt-get install -y gettext
 
-
       - name: Stage extension files
         run: |
-          mkdir -p /tmp/build
-          cp -r . /tmp/build/
-          rm -rf /tmp/build/po
+          mkdir -p build
+          cp -r src/. build/
+          # Translation sources aren't distributed - only the compiled .mo files are.
+          rm -rf build/po
+
       - name: Compile translations
         run: |
           shopt -s nullglob
           for po in src/po/*.po; do
             lang=$(basename "$po" .po)
-            mkdir -p "/tmp/build/locale/$lang/LC_MESSAGES"
-            msgfmt "$po" -o "/tmp/build/locale/$lang/LC_MESSAGES/${UUID}.mo"
+            mkdir -p "build/locale/$lang/LC_MESSAGES"
+            msgfmt "$po" -o "build/locale/$lang/LC_MESSAGES/${UUID}.mo"
           done
+
       - name: Package extension
         run: |
-          cd /tmp/build
-          zip -r "$GITHUB_WORKSPACE/${UUID}.zip" . -x '.*'
+          cd build
+          zip -r "../${UUID}.zip" . -x '.*'
 
       - name: Attach zip to release
         uses: softprops/action-gh-release@v2
