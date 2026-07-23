@@ -1,0 +1,49 @@
+name: Package GNOME extension
+
+# Builds the extension zip and attaches it to the GitHub Release whenever
+# a release is published.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+env:
+  UUID: auto-themed@dodog.github.com
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install gettext (for msgfmt)
+        run: sudo apt-get update && sudo apt-get install -y gettext
+
+      - name: Stage extension files
+        run: |
+          mkdir -p build
+          cp -r . build/
+          # Translation sources aren't distributed - only the compiled .mo files are.
+          rm -rf build/po
+
+      - name: Compile translations
+        run: |
+          shopt -s nullglob
+          for po in src/po/*.po; do
+            lang=$(basename "$po" .po)
+            mkdir -p "build/locale/$lang/LC_MESSAGES"
+            msgfmt "$po" -o "build/locale/$lang/LC_MESSAGES/${UUID}.mo"
+          done
+
+      - name: Package extension
+        run: |
+          cd build
+          zip -r "../${UUID}.zip" . -x '.*'
+
+      - name: Attach zip to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.UUID }}.zip
