@@ -24,24 +24,23 @@ jobs:
 
       - name: Stage extension files
         run: |
-          mkdir -p build
-          cp -r /. build/
-          # Translation sources aren't distributed - only the compiled .mo files are.
-          rm -rf build/po
-
+                BUILD_DIR="$RUNNER_TEMP/build"
+                mkdir -p "$BUILD_DIR"
+                # Copy everything except .git and po (translation sources aren't distributed)
+                rsync -a --exclude='.git' --exclude='po' ./ "$BUILD_DIR"/
+                echo "BUILD_DIR=$BUILD_DIR" >> "$GITHUB_ENV"
       - name: Compile translations
         run: |
           shopt -s nullglob
           for po in src/po/*.po; do
             lang=$(basename "$po" .po)
-            mkdir -p "build/locale/$lang/LC_MESSAGES"
-            msgfmt "$po" -o "build/locale/$lang/LC_MESSAGES/${UUID}.mo"
+            mkdir -p "$BUILD_DIR/locale/$lang/LC_MESSAGES"
+            msgfmt "$po" -o "$BUILD_DIR/locale/$lang/LC_MESSAGES/${UUID}.mo"
           done
-
       - name: Package extension
         run: |
-          cd build
-          zip -r "../${UUID}.zip" . -x '.*'
+          cd "$BUILD_DIR"
+          zip -r "$GITHUB_WORKSPACE/${UUID}.zip" . -x '.*'
 
       - name: Attach zip to release
         uses: softprops/action-gh-release@v2
