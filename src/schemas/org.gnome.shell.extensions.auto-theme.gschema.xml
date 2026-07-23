@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.auto-theme"
+          path="/org/gnome/shell/extensions/auto-theme/">
+
+    <key name="light-time" type="s">
+      <default>'07:00'</default>
+      <summary>Time to switch to light theme</summary>
+      <description>24h time in HH:MM format</description>
+    </key>
+
+    <key name="dark-time" type="s">
+      <default>'19:00'</default>
+      <summary>Time to switch to dark theme</summary>
+      <description>24h time in HH:MM format</description>
+    </key>
+
+    <key name="gtk-light-theme" type="s">
+      <default>'Orchis-Light'</default>
+      <summary>GTK3/legacy theme name to use for light mode</summary>
+    </key>
+
+    <key name="gtk-dark-theme" type="s">
+      <default>'Orchis-Dark'</default>
+      <summary>GTK3/legacy theme name to use for dark mode</summary>
+    </key>
+
+    <key name="shell-light-theme" type="s">
+      <default>'Orchis'</default>
+      <summary>Shell theme name (org.gnome.shell.extensions.user-theme) for light mode</summary>
+    </key>
+
+    <key name="shell-dark-theme" type="s">
+      <default>'Orchis-Dark'</default>
+      <summary>Shell theme name (org.gnome.shell.extensions.user-theme) for dark mode</summary>
+    </key>
+
+    <key name="apply-libadwaita-fix" type="b">
+      <default>true</default>
+      <summary>Re-link ~/.config/gtk-4.0 files to the active variant's gtk-4.0 dir</summary>
+      <description>Fixes GTK4/libadwaita apps (Files, Settings, Extensions, Tweaks) not following the legacy theme</description>
+    </key>
+
+    <key name="apply-custom-css" type="b">
+      <default>true</default>
+      <summary>Append the custom CSS block below to gtk.css / gtk-dark.css</summary>
+    </key>
+
+    <key name="custom-css" type="s">
+      <default>''</default>
+      <summary>Custom CSS appended to the libadwaita theme files</summary>
+    </key>
+
+    <key name="restart-apps" type="b">
+      <default>true</default>
+      <summary>Quit Nautilus / gnome-control-center / Extensions app after a switch</summary>
+      <description>So the new theme is visible immediately instead of on next launch</description>
+    </key>
+
+    <key name="apply-qt-fix" type="b">
+      <default>false</default>
+      <summary>Also switch the qt5ct/qt6ct "style" on each theme switch</summary>
+      <description>Writes ~/.config/qt5ct/qt5ct.conf and qt6ct.conf directly; requires qt5ct/qt6ct to already be set up</description>
+    </key>
+
+    <key name="qt-light-style" type="s">
+      <default>'Adwaita'</default>
+      <summary>qt5ct/qt6ct style name to use for light mode</summary>
+      <description>Must match a style name available in qt5ct's Appearance tab, e.g. Adwaita, Fusion, Breeze, kvantum</description>
+    </key>
+
+    <key name="qt-dark-style" type="s">
+      <default>'Adwaita-Dark'</default>
+      <summary>qt5ct/qt6ct style name to use for dark mode</summary>
+    </key>
+
+    <key name="last-mode" type="s">
+      <default>''</default>
+      <summary>Internal: last mode applied ("light"/"dark"), used to avoid redundant re-applies</summary>
+    </key>
+
+  </schema>
+</schemalist>
