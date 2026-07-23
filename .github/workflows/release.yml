@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 env:
-  UUID: auto-themed@dodog.github.com
+  UUID: auto-theme@dodog.github.com
 
 jobs:
   package:
@@ -26,8 +26,6 @@ jobs:
         run: |
           mkdir -p build
           cp -r src/. build/
-          # Translation sources aren't distributed - only the compiled .mo files are.
-          rm -rf build/po
 
       - name: Package extension
         run: |
