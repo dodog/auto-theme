@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 env:
-  UUID: auto-theme@dodog.github.com
+  UUID: auto-theme@dodog.github.io
 
 jobs:
   package:
@@ -20,12 +20,23 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install gettext (for msgfmt)
-        run: sudo apt-get update -y 
+        run: sudo apt-get update && sudo apt-get install -y gettext
 
       - name: Stage extension files
         run: |
           mkdir -p build
           cp -r src/. build/
+          # Translation sources aren't distributed - only the compiled .mo files are.
+          rm -rf build/po
+
+      - name: Compile translations
+        run: |
+          shopt -s nullglob
+          for po in src/po/*.po; do
+            lang=$(basename "$po" .po)
+            mkdir -p "build/locale/$lang/LC_MESSAGES"
+            msgfmt "$po" -o "build/locale/$lang/LC_MESSAGES/${UUID}.mo"
+          done
 
       - name: Package extension
         run: |
