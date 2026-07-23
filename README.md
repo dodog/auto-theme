@@ -1,4 +1,4 @@
-# Auto Theme Switcher
+# Auto Theme
 
 A GNOME Shell extension that switches your GTK, Shell, and (optionally) Qt
 theme between a light and dark variant on a schedule you set — light in the
@@ -23,12 +23,12 @@ to.
 
 - **Exact scheduling, no polling loop.** You pick a light-time and a
   dark-time (HH:MM); the extension computes exactly how many seconds until
-  the next boundary and sets a single timer for that moment - nothing runs
+  the next boundary and sets a single timer for that moment — nothing runs
   in the background in between.
-- **GTK3 / legacy theme switching** - sets `gtk-theme` and `color-scheme` via
+- **GTK3 / legacy theme switching** — sets `gtk-theme` and `color-scheme` via
   gsettings, with the theme name picked from a dropdown of what's actually
   installed under `~/.themes` and `/usr/share/themes`.
-- **GNOME Shell theme switching** - sets the Shell theme via the
+- **GNOME Shell theme switching** — sets the Shell theme via the
   [User Themes](https://extensions.gnome.org/extension/19/user-themes/)
   extension, same dropdown-detection approach.
 - **GTK4 / libadwaita fix.** Files, Settings, the Extensions app, Tweaks, and
@@ -39,7 +39,7 @@ to.
   theme instead of falling back to stock Adwaita.
 - **Custom CSS injection, done idempotently.** Append your own CSS (e.g. a
   Nautilus sidebar spacing fix) to the libadwaita theme files. A marker
-  comment prevents it from being duplicated on every single switch - a
+  comment prevents it from being duplicated on every single switch — a
   common bug in simple switcher scripts, where the block silently grows the
   underlying theme file forever.
 - **Optional Qt5/Qt6 style switching.** If you use `qt5ct`/`qt6ct`, the
@@ -55,7 +55,7 @@ to.
   a switch so the change is visible immediately instead of on next launch.
 - **Built-in explanations.** Every section in the preferences window has a
   `(?)` button with a plain-language explanation of what it controls and
-  what it doesn't - useful since "GTK3 vs GTK4/libadwaita vs Shell vs Qt" is
+  what it doesn't — useful since "GTK3 vs GTK4/libadwaita vs Shell vs Qt" is
   genuinely confusing the first time around.
 
 ## How theming works on GNOME
@@ -65,14 +65,14 @@ four different settings instead of one:
 
 | Layer | Covers | Set via |
 |---|---|---|
-| **GTK3 / legacy** | Firefox, GIMP, most traditional apps | `gtk-theme` gsetting \u2192 `~/.themes/<name>/gtk-3.0/` |
+| **GTK3 / legacy** | Firefox, GIMP, most traditional apps | `gtk-theme` gsetting → `~/.themes/<name>/gtk-3.0/` |
 | **GTK4 / libadwaita** | Files, Settings, Extensions app, Tweaks, most newer apps | Only follows light/dark + accent color automatically. The one override hook is `~/.config/gtk-4.0/gtk.css` / `gtk-dark.css` |
-| **GNOME Shell** | Top bar, overview, quick settings - not app windows | User Themes extension's `name` setting \u2192 `~/.themes/<name>/gnome-shell/` |
+| **GNOME Shell** | Top bar, overview, quick settings — not app windows | User Themes extension's `name` setting → `~/.themes/<name>/gnome-shell/` |
 | **Qt5 / Qt6** | Qt apps (e.g. Double Commander) | Entirely separate from GNOME; needs `qt5ct`/`qt6ct` as a bridge |
 | **Flatpak** | Sandboxed apps | GTK4 apps follow the desktop portal automatically; GTK3 apps need `flatpak override --filesystem=~/.themes` or a Flatpak theme extension |
 
-libadwaita apps deliberately dropped support for full re-theming - they only
-expose light/dark + an accent color - which is why "my theme doesn't apply
+libadwaita apps deliberately dropped support for full re-theming — they only
+expose light/dark + an accent color — which is why "my theme doesn't apply
 to Settings/Files" is such a common complaint. The `gtk-4.0/gtk.css` override
 hook is the one door left open, and it's what the libadwaita fix in this
 extension uses.
@@ -81,7 +81,7 @@ extension uses.
 
 - GNOME Shell 45 or newer (uses the ESM extension format introduced in 45).
   If you're on a version not listed in `metadata.json`'s `shell-version`,
-  add it there - the code itself doesn't use anything version-specific
+  add it there — the code itself doesn't use anything version-specific
   beyond that format.
 - A GTK theme with both a `gtk-3.0/` and (ideally) `gtk-4.0/` folder under
   `~/.themes/<name>/` or `/usr/share/themes/<name>/`.
@@ -92,7 +92,7 @@ extension uses.
   and run at least once.
 
 If you have other automatic theme switchers installed (Night Theme Switcher,
-legacy-theme-auto-switcher, etc.), disable them first - multiple extensions
+legacy-theme-auto-switcher, etc.), disable them first — multiple extensions
 writing the same gsettings keys on independent timers will fight each other.
 
 ## Installation
@@ -102,8 +102,8 @@ writing the same gsettings keys on independent timers will fight each other.
 ```bash
 mkdir -p ~/.local/share/gnome-shell/extensions
 cd ~/.local/share/gnome-shell/extensions
-unzip auto-theme@dodog.github.com.zip
-glib-compile-schemas auto-theme@dodog.github.com/schemas/
+unzip auto-theme@dodog.github.io.zip
+glib-compile-schemas auto-theme@dodog.github.io/schemas/
 ```
 
 ### From source
@@ -111,39 +111,51 @@ glib-compile-schemas auto-theme@dodog.github.com/schemas/
 ```bash
 git clone https://github.com/dodog/auto-theme.git
 mkdir -p ~/.local/share/gnome-shell/extensions
-cp -r auto-theme/auto-theme@dodog.github.com ~/.local/share/gnome-shell/extensions/
-glib-compile-schemas ~/.local/share/gnome-shell/extensions/auto-theme@dodog.github.com/schemas/
+cp -r auto-theme/auto-theme@dodog.github.io ~/.local/share/gnome-shell/extensions/
+glib-compile-schemas ~/.local/share/gnome-shell/extensions/auto-theme@dodog.github.io/schemas/
 ```
 
-Then reload GNOME Shell - log out/in on Wayland (required for loading a new
-extension), or on X11, `Alt`+`F2` \u2192 `r` \u2192 `Enter`. Finally:
+Then reload GNOME Shell — log out/in on Wayland (required for loading a new
+extension), or on X11, `Alt`+`F2` → `r` → `Enter`. Finally:
 
 ```bash
-gnome-extensions enable auto-theme@dodog.github.com
-gnome-extensions prefs auto-theme@dodog.github.com
+gnome-extensions enable auto-theme@dodog.github.io
+gnome-extensions prefs auto-theme@dodog.github.io
 ```
+
 
 ## Configuration
 
 Everything is in one preferences window, no tabs:
 
-1. **Switch times** - pick light/dark times with the hour/minute spinners.
-2. **GTK / legacy theme** - pick your GTK3 theme for each mode from the
+1. **Switch times** — pick light/dark times with the hour/minute spinners.
+2. **GTK / legacy theme** — pick your GTK3 theme for each mode from the
    detected list.
-3. **Shell theme** - pick your Shell theme for each mode (requires User
+3. **Shell theme** — pick your Shell theme for each mode (requires User
    Themes).
-4. **Qt5 / Qt6 style** - optional; turn on and pick a style per mode if you
+4. **Qt5 / Qt6 style** — optional; turn on and pick a style per mode if you
    use qt5ct/qt6ct.
-5. **libadwaita (GTK4) fix** - toggle the config re-link and/or the custom
+5. **libadwaita (GTK4) fix** — toggle the config re-link and/or the custom
    CSS append.
-6. **Custom CSS** - edit the CSS block that gets appended to the GTK4 theme
+6. **Custom CSS** — edit the CSS block that gets appended to the GTK4 theme
    files (defaults to a Nautilus sidebar spacing fix; clear it if your theme
    doesn't need it).
-7. **App restart** - toggle whether Nautilus/Settings/Extensions app get
+7. **App restart** — toggle whether Nautilus/Settings/Extensions app get
    quit after a switch.
 
 Every `(?)` button opens a short explanation of exactly what that section
 touches.
+
+## Translations
+
+All the preferences-window text is wrapped for translation (`gettext`), and
+a translation template is included at
+`po/auto-theme@dodog.github.io.pot`.
+
+To add a translation:
+
+Create a your language file (e.g de.po) from the auto-theme@dodog.github.io.pot template. Translation contributions are very welcome — open a PR with your `.po` file
+under `po/`.
 
 ## Troubleshooting
 
@@ -161,17 +173,17 @@ auto-theme: switched to dark (gtk=Orchis-Dark, shell=Orchis-Dark)
 
 Other messages worth knowing:
 
-- `org.gnome.shell.extensions.user-theme schema not found` - the User
+- `org.gnome.shell.extensions.user-theme schema not found` — the User
   Themes extension isn't installed/enabled; Shell theme switching is
   skipped.
-- `symlink target missing, skipping: ...` - the chosen GTK theme doesn't
+- `symlink target missing, skipping: ...` — the chosen GTK theme doesn't
   ship a `gtk-4.0/` folder; the libadwaita fix is skipped for it, apps fall
   back to stock Adwaita light/dark.
-- `<path> not found, skipping` (Qt) - qt5ct/qt6ct hasn't been run yet, so
+- `<path> not found, skipping` (Qt) — qt5ct/qt6ct hasn't been run yet, so
   its config file doesn't exist.
 
 If prefs won't open after a GNOME upgrade with an `ImportError` mentioning
-`prefs.js`, GNOME may have moved the internal resource path again - check
+`prefs.js`, GNOME may have moved the internal resource path again — check
 that `resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js` still
 exists for your version and adjust the import in `prefs.js` if not.
 
@@ -181,6 +193,9 @@ exists for your version and adjust the import in `prefs.js` if not.
   `QT_QPA_PLATFORMTHEME=qt5ct`/`qt6ct` set (that platform integration watches
   its own config file). Without it active, an app keeps its old style until
   relaunched.
+- The scheduler re-checks and re-arms itself on waking from suspend (via
+  logind's `PrepareForSleep` signal), so a laptop closed overnight doesn't
+  end up delaying the next switch by the length of the nap.
 - Qt style plugin detection is a best-effort scan of common plugin
   directories; if your style isn't auto-detected, whatever you already have
   set stays selectable regardless.
@@ -190,13 +205,13 @@ exists for your version and adjust the import in `prefs.js` if not.
 ## Contributing
 
 Issues and PRs welcome. This started as a personal shell script
-(`auto-theme.sh`) rebuilt as a proper extension after two existing
-switcher extensions - [Night Theme
+(`gnome-theme-auto.sh`) rebuilt as a proper extension after two existing
+switcher extensions — [Night Theme
 Switcher](https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension)
 and
 [legacy-theme-auto-switcher](https://github.com/mukul29/legacy-theme-auto-switcher-gnome-extension)
-- didn't reliably cover the GTK4/libadwaita + Qt side of things together.
+— didn't reliably cover the GTK4/libadwaita + Qt side of things together.
 
 ## License
 
-MIT - see `LICENSE`.
+GPL — see `LICENSE`.
