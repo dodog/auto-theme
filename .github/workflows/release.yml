@@ -22,24 +22,23 @@ jobs:
       - name: Install gettext (for msgfmt)
         run: sudo apt-get update && sudo apt-get install -y gettext
 
+
       - name: Stage extension files
         run: |
-                BUILD_DIR="$RUNNER_TEMP/build"
-                mkdir -p "$BUILD_DIR"
-                # Copy everything except .git and po (translation sources aren't distributed)
-                rsync -a --exclude='.git' --exclude='po' ./ "$BUILD_DIR"/
-                echo "BUILD_DIR=$BUILD_DIR" >> "$GITHUB_ENV"
+          mkdir -p /tmp/build
+          cp -r . /tmp/build/
+          rm -rf /tmp/build/po
       - name: Compile translations
         run: |
           shopt -s nullglob
           for po in src/po/*.po; do
             lang=$(basename "$po" .po)
-            mkdir -p "$BUILD_DIR/locale/$lang/LC_MESSAGES"
-            msgfmt "$po" -o "$BUILD_DIR/locale/$lang/LC_MESSAGES/${UUID}.mo"
+            mkdir -p "/tmp/build/locale/$lang/LC_MESSAGES"
+            msgfmt "$po" -o "/tmp/build/locale/$lang/LC_MESSAGES/${UUID}.mo"
           done
       - name: Package extension
         run: |
-          cd "$BUILD_DIR"
+          cd /tmp/build
           zip -r "$GITHUB_WORKSPACE/${UUID}.zip" . -x '.*'
 
       - name: Attach zip to release
