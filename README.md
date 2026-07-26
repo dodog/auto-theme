@@ -129,17 +129,18 @@ gnome-extensions prefs auto-theme@dodog.github.io
 Everything is in one preferences window, no tabs:
 
 1. **Switch times** — pick light/dark times with the hour/minute spinners.
-2. **GTK / legacy theme** — pick your GTK3 theme for each mode from the
-   detected list.
+2. **GTK3 theme** — pick your GTK3 theme for each mode from the
+   detected list. Defaults to stock `Adwaita` for both, so a fresh install
+   works before you've installed anything extra.
 3. **Shell theme** — pick your Shell theme for each mode (requires User
-   Themes).
+   Themes). Defaults to empty (the built-in Shell theme) for both.
 4. **Qt5 / Qt6 style** — optional; turn on and pick a style per mode if you
    use qt5ct/qt6ct.
-5. **libadwaita (GTK4) fix** — toggle the config re-link and/or the custom
+5. **GTK4 (libadwaita) fix** — toggle the config re-link and/or the custom
    CSS append.
-6. **Custom CSS** — edit the CSS block that gets appended to the GTK4 theme
-   files (defaults to a Nautilus sidebar spacing fix; clear it if your theme
-   doesn't need it).
+6. **Custom CSS** — empty by default; add your own CSS here if your theme
+   needs a tweak (e.g. a sidebar spacing fix), and turn on "Append custom CSS
+   below" above once you have.
 7. **App restart** — toggle whether Nautilus/Settings/Extensions app get
    quit after a switch.
 
@@ -168,7 +169,7 @@ journalctl --user -f -o cat /usr/bin/gnome-shell | grep auto-theme
 A successful switch logs a line like:
 
 ```
-auto-theme: switched to dark (gtk=Orchis-Dark, shell=Orchis-Dark)
+auto-theme: switched to dark (gtk=Adwaita, shell=)
 ```
 
 Other messages worth knowing:
@@ -196,9 +197,16 @@ exists for your version and adjust the import in `prefs.js` if not.
 - The scheduler re-checks and re-arms itself on waking from suspend (via
   logind's `PrepareForSleep` signal), so a laptop closed overnight doesn't
   end up delaying the next switch by the length of the nap.
-- Qt style plugin detection is a best-effort scan of common plugin
-  directories; if your style isn't auto-detected, whatever you already have
-  set stays selectable regardless.
+- Qt style detection reads each installed style plugin's own embedded
+  metadata (the same "Keys" block Qt itself reads), across the common
+  Qt5/Qt6 plugin paths including Arch/Manjaro's unversioned `qt` directory.
+  If a plugin's metadata can't be read, or you're on a distro laying out Qt
+  plugins somewhere else entirely, it falls back to a filename guess; either
+  way, whatever you already have set stays selectable regardless of
+  detection.
+- Shell theme detection can't find `Adwaita` as a folder because on modern
+  GNOME it isn't one — it's compiled into `gnome-shell` itself. Pick
+  "(System default)" for that instead of expecting it in the list.
 - Flatpak sandboxing and Qt/GNOME bridging (`qt5ct`, `flatpak override`)
   are one-time system setup, not something this extension manages.
 
