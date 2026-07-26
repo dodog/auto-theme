@@ -6,7 +6,12 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 const CSS_MARK_BEGIN = '/* --- auto-theme: custom css begin --- */';
 const CSS_MARK_END = '/* --- auto-theme: custom css end --- */';
 
-export default class GnomeThemeAutoExtension extends Extension {
+export default class AutoThemeExtension extends Extension {
+    constructor(metadata) {
+        super(metadata);
+        this.initTranslations();
+    }
+
     enable() {
         this._settings = this.getSettings();
         this._timeoutId = null;
@@ -91,7 +96,11 @@ export default class GnomeThemeAutoExtension extends Extension {
         });
     }
 
-    _secondsUntilNextBoundary() {
+    // Shared by _computeMode() and _secondsUntilNextBoundary() so the
+    // light-time/dark-time settings are only read and parsed once per
+    // switch cycle, instead of each doing it independently (which also
+    // meant an invalid time setting got logged twice).
+    _getScheduleMinutes() {
         const lightStr = this._settings.get_string('light-time');
         const darkStr = this._settings.get_string('dark-time');
         const lightMin = this._parseTime(lightStr);
@@ -101,10 +110,17 @@ export default class GnomeThemeAutoExtension extends Extension {
             log(`auto-theme: invalid time setting light="${lightStr}" dark="${darkStr}"`);
             return null;
         }
+        return { lightMin, darkMin };
+    }
+
+    _secondsUntilNextBoundary() {
+        const sched = this._getScheduleMinutes();
+        if (!sched)
+            return null;
 
         const now = GLib.DateTime.new_now_local();
         const nowSec = now.get_hour() * 3600 + now.get_minute() * 60 + now.get_second();
-        const boundaries = [lightMin * 60, darkMin * 60];
+        const boundaries = [sched.lightMin * 60, sched.darkMin * 60];
 
         let next = Infinity;
         for (const b of boundaries) {
@@ -130,15 +146,10 @@ export default class GnomeThemeAutoExtension extends Extension {
     }
 
     _computeMode() {
-        const lightStr = this._settings.get_string('light-time');
-        const darkStr = this._settings.get_string('dark-time');
-        const lightMin = this._parseTime(lightStr);
-        const darkMin = this._parseTime(darkStr);
-
-        if (lightMin === null || darkMin === null) {
-            log(`auto-theme: invalid time setting light="${lightStr}" dark="${darkStr}"`);
+        const sched = this._getScheduleMinutes();
+        if (!sched)
             return null;
-        }
+        const { lightMin, darkMin } = sched;
 
         const now = GLib.DateTime.new_now_local();
         const nowMin = now.get_hour() * 60 + now.get_minute();

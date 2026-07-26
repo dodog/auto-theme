@@ -36,25 +36,116 @@ function listThemes(markerSubdir) {
         }
     }
 
-    return [...found].sort();
+    return [...found].sort((a, b) => a.localeCompare(b));
 }
 
-// Qt styles aren't folders like GTK/Shell themes — they're compiled plugin
-// files, plus two built-ins (Fusion, Windows) that ship inside Qt itself
-// and need no plugin at all. Scans the common plugin install paths for
-// installed style plugins across distros/Qt5/Qt6.
-function listQtStyles() {
-    const pluginDirs = [
-        '/usr/lib/qt5/plugins/styles',
-        '/usr/lib/qt6/plugins/styles',
-        '/usr/lib64/qt5/plugins/styles',
-        '/usr/lib64/qt6/plugins/styles',
-        '/usr/lib/x86_64-linux-gnu/qt5/plugins/styles',
-        '/usr/lib/x86_64-linux-gnu/qt6/plugins/styles',
+// Scans the common plugin install paths across distros/Qt5/Qt6.
+function buildQtPluginDirs() {
+    const libBases = [
+        '/usr/lib', '/usr/lib64', '/usr/local/lib',
+        '/usr/lib/x86_64-linux-gnu', '/usr/lib/aarch64-linux-gnu', '/usr/lib/i386-linux-gnu',
     ];
-    const found = new Set(['Fusion', 'Windows']);
+    const qtSubdirs = ['qt5/plugins/styles', 'qt6/plugins/styles', 'qt/plugins/styles'];
 
-    for (const dir of pluginDirs) {
+    const dirs = [];
+    for (const base of libBases) {
+        for (const sub of qtSubdirs)
+            dirs.push(GLib.build_filenamev([base, sub]));
+    }
+    return dirs;
+}
+
+// This reads CBOR (RFC 8949) major type 3 (text string) and major type 4 (array) to get the themes names.
+function readCborUint(bytes, pos, headerByte, base) {
+    const info = headerByte - base;
+    if (info <= 23)
+        return [info, pos];
+    if (info === 24)
+        return [bytes[pos], pos + 1];
+    if (info === 25)
+        return [(bytes[pos] << 8) | bytes[pos + 1], pos + 2];
+    return [null, pos]; // longer forms aren't expected for a short style-name list
+}
+
+function readCborTextString(bytes, pos) {
+    const header = bytes[pos];
+    if (header < 0x60 || header > 0x7b)
+        return [null, pos];
+    const [len, afterLen] = readCborUint(bytes, pos + 1, header, 0x60);
+    if (len === null)
+        return [null, pos];
+    const strBytes = bytes.slice(afterLen, afterLen + len);
+    return [new TextDecoder('utf-8', { fatal: false }).decode(strBytes), afterLen + len];
+}
+
+// Byte sequence for the CBOR-encoded text string "Keys": header 0x64
+// (short string, length 4) followed by the literal bytes K e y s.
+const CBOR_KEYS_MARKER = [0x64, 0x4b, 0x65, 0x79, 0x73];
+
+function readCborStyleKeys(bytes) {
+    let keysPos = -1;
+    outer:
+    for (let i = 0; i <= bytes.length - CBOR_KEYS_MARKER.length; i++) {
+        for (let j = 0; j < CBOR_KEYS_MARKER.length; j++) {
+            if (bytes[i + j] !== CBOR_KEYS_MARKER[j])
+                continue outer;
+        }
+        keysPos = i + CBOR_KEYS_MARKER.length;
+        break;
+    }
+    if (keysPos === -1)
+        return [];
+
+    const header = bytes[keysPos];
+    if (header < 0x80 || header > 0x9b)
+        return []; // not immediately followed by an array — not the layout we expect
+    const [count, afterHeader] = readCborUint(bytes, keysPos + 1, header, 0x80);
+    if (count === null)
+        return [];
+
+    const keys = [];
+    let pos = afterHeader;
+    for (let i = 0; i < count && i < 20; i++) {
+        const [text, next] = readCborTextString(bytes, pos);
+        if (text === null)
+            break;
+        keys.push(text);
+        pos = next;
+    }
+    return keys;
+}
+
+// Fallback for older, pre-CBOR Qt5 builds that embedded metadata as literal
+// JSON text instead.
+function readJsonStyleKeys(bytes) {
+    const text = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+    const m = /"Keys"\s*:\s*\[([^\]]*)\]/.exec(text);
+    if (!m)
+        return [];
+    const keys = [];
+    const keyRe = /"([^"]+)"/g;
+    let km;
+    while ((km = keyRe.exec(m[1])) !== null)
+        keys.push(km[1]);
+    return keys;
+}
+
+function readPluginStyleKeys(path) {
+    try {
+        const [ok, bytes] = GLib.file_get_contents(path);
+        if (!ok)
+            return [];
+        const cborKeys = readCborStyleKeys(bytes);
+        return cborKeys.length > 0 ? cborKeys : readJsonStyleKeys(bytes);
+    } catch (e) {
+        return [];
+    }
+}
+
+function listQtStyles() {
+    const found = new Set();
+
+    for (const dir of buildQtPluginDirs()) {
         const dirFile = Gio.File.new_for_path(dir);
         if (!dirFile.query_exists(null))
             continue;
@@ -62,9 +153,22 @@ function listQtStyles() {
             const it = dirFile.enumerate_children('standard::name', Gio.FileQueryInfoFlags.NONE, null);
             let info;
             while ((info = it.next_file(null)) !== null) {
-                const m = /^lib(.+)\.so$/.exec(info.get_name());
-                if (m)
-                    found.add(m[1]);
+                const name = info.get_name();
+                if (!name.endsWith('.so'))
+                    continue;
+
+                const keys = readPluginStyleKeys(GLib.build_filenamev([dir, name]));
+                if (keys.length > 0) {
+                    for (const k of keys)
+                        found.add(k);
+                } else {
+                    // Metadata scan found nothing — fall back to a filename
+                    // guess. Handles both "libfoo.so" and "foo.so" (some
+                    // packages, like adwaita-qt's, ship without the "lib" prefix).
+                    const m = /^(?:lib)?(.+)\.so$/.exec(name);
+                    if (m)
+                        found.add(m[1]);
+                }
             }
         } catch (e) {
             // unreadable directory, skip it
@@ -114,29 +218,42 @@ function makeTimeRow(title, settings, key) {
     return row;
 }
 
-// Dropdown populated from installed themes. If the currently-configured
-// name isn't among the detected ones (custom install path, typo, etc.)
-// it's kept in the list anyway so the row doesn't silently change your setting.
-function makeThemeComboRow(title, settings, key, detected) {
+// Dropdown populated from installed themes/styles. `alwaysInclude` adds
+// choices that are valid regardless of detection (e.g. Adwaita, Fusion —
+// built into GTK/Qt itself, no folder or plugin file required). `emptyLabel`
+// turns an empty-string setting value into an explicit, selectable entry
+// (e.g. "(System default)") instead of leaving it invisible in the list.
+function makeThemeComboRow(title, settings, key, detected, opts = {}) {
+    const { emptyLabel = null, alwaysInclude = [] } = opts;
     const current = settings.get_string(key);
-    let choices = detected;
+
+    let choices = [...new Set([...alwaysInclude, ...detected])].sort((a, b) => a.localeCompare(b));
     if (current && !choices.includes(current))
-        choices = [...choices, current].sort();
-    if (choices.length === 0)
-        choices = current ? [current] : [_('(none found)')];
+        choices = [...choices, current].sort((a, b) => a.localeCompare(b));
+
+    let displayChoices = choices;
+    let currentDisplay = current;
+    if (emptyLabel) {
+        displayChoices = [emptyLabel, ...choices];
+        currentDisplay = current === '' ? emptyLabel : current;
+    }
+    if (displayChoices.length === 0)
+        displayChoices = [_('(none found)')];
 
     const row = new Adw.ComboRow({
         title,
-        model: new Gtk.StringList({ strings: choices }),
+        model: new Gtk.StringList({ strings: displayChoices }),
     });
 
-    const idx = choices.indexOf(current);
+    const idx = displayChoices.indexOf(currentDisplay);
     row.set_selected(idx >= 0 ? idx : 0);
 
     row.connect('notify::selected', () => {
         const item = row.get_selected_item();
-        if (item)
-            settings.set_string(key, item.get_string());
+        if (!item)
+            return;
+        const value = item.get_string();
+        settings.set_string(key, (emptyLabel && value === emptyLabel) ? '' : value);
     });
 
     return row;
@@ -149,8 +266,7 @@ function makeSwitchRow(title, subtitle, settings, key) {
 }
 
 // A small (?) button that opens a popover with a longer explanation.
-// Used as a PreferencesGroup header-suffix so the short description stays
-// short but more detail is one click away.
+// Used as a PreferencesGroup header-suffix.
 function makeHelpButton(text) {
     const label = new Gtk.Label({
         label: text,
@@ -171,13 +287,18 @@ function makeHelpButton(text) {
 }
 
 export default class AutoThemePreferences extends ExtensionPreferences {
+    constructor(metadata) {
+        super(metadata);
+        this.initTranslations();
+    }
+
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
         const gtkThemes = listThemes('gtk-3.0');
         const shellThemes = listThemes('gnome-shell');
         const qtStyles = listQtStyles();
 
-        // Everything lives on a single page now — no tabs to accidentally click.
+        // Everything lives on a single page — no tabs to accidentally click.
         const page = new Adw.PreferencesPage();
         window.add(page);
 
@@ -186,12 +307,13 @@ export default class AutoThemePreferences extends ExtensionPreferences {
             description:
                 _('GNOME theming is split across a few independent layers, each with its ' +
                 'own setting below. Tap the (?) next to a section for details.\n\n' +
-                '• GTK3 / legacy — older-style apps (Firefox, GIMP, many utilities).\n' +
+                '• GTK3 — older-style apps (Firefox, GIMP, many utilities).\n' +
                 '• GTK4 / libadwaita — Files, Settings, Extensions, Tweaks and newer apps; ' +
                 'only follows light/dark automatically, styled via a CSS override.\n' +
                 '• Shell — the top bar and overview, separate from all app windows.\n' +
                 '• Qt5/Qt6 apps — separate settings system entirely; optional support ' +
-                'via qt5ct/qt6ct further down.'),
+                'via qt5ct/qt6ct further down.\n' +
+                '• Flatpak apps — usually follow along automatically already.'),
         });
         page.add(introGroup);
 
@@ -204,7 +326,7 @@ export default class AutoThemePreferences extends ExtensionPreferences {
         timeGroup.add(makeTimeRow(_('Switch to dark theme at'), settings, 'dark-time'));
 
         const gtkGroup = new Adw.PreferencesGroup({
-            title: _('GTK / legacy theme'),
+            title: _('GTK3'),
             description: _('Detected in ~/.themes and /usr/share/themes (folders containing gtk-3.0/)'),
             header_suffix: makeHelpButton(
                 _('Applies to GTK3 apps: Firefox, GIMP, and most traditional apps that ' +
@@ -215,53 +337,53 @@ export default class AutoThemePreferences extends ExtensionPreferences {
             ),
         });
         page.add(gtkGroup);
-        gtkGroup.add(makeThemeComboRow(_('Light theme'), settings, 'gtk-light-theme', gtkThemes));
-        gtkGroup.add(makeThemeComboRow(_('Dark theme'), settings, 'gtk-dark-theme', gtkThemes));
+        gtkGroup.add(makeThemeComboRow(_('Light theme'), settings, 'gtk-light-theme', gtkThemes, { alwaysInclude: ['Adwaita'] }));
+        gtkGroup.add(makeThemeComboRow(_('Dark theme'), settings, 'gtk-dark-theme', gtkThemes, { alwaysInclude: ['Adwaita'] }));
 
         const shellGroup = new Adw.PreferencesGroup({
             title: _('Shell theme'),
-            description: _('Detected folders containing gnome-shell/. Requires the User Themes extension.'),
+            description: _('Detected folders containing gnome-shell/, plus a System default option. Requires the User Themes extension.'),
             header_suffix: makeHelpButton(
-                _('Applies only to the GNOME Shell top bar, overview, and quick settings — ' +
-                'not to any application window. Set via the User Themes extension’s ' +
-                '"name" setting, which loads ~/.themes/<name>/gnome-shell/gnome-shell.css.\n\n' +
-                'If the User Themes extension isn’t installed/enabled, this setting is ' +
-                'silently skipped (check the journal for a message about it).')
+                _('This only changes the top bar and the overview (the screen you get by ' +
+                'pressing the Super/Windows key) — not the look of your actual apps.\n\n' +
+                'It works through another extension called "User Themes." Picking a name ' +
+                'here just tells User Themes which theme folder to load.\n\n' +
+                '"(System default)" means "don’t use a custom one, just use GNOME’s own ' +
+                'built-in look." That’s also why you won’t see "Adwaita" as a pickable ' +
+                'name here even though it’s the default — it’s built in, not a folder on ' +
+                'disk like other themes are, so pick "(System default)" instead when you ' +
+                'want it.\n\n' +
+                'If nothing happens when this switches, make sure the "User Themes" ' +
+                'extension is installed and turned on.')
             ),
         });
         page.add(shellGroup);
-        shellGroup.add(makeThemeComboRow(_('Light shell theme'), settings, 'shell-light-theme', shellThemes));
-        shellGroup.add(makeThemeComboRow(_('Dark shell theme'), settings, 'shell-dark-theme', shellThemes));
+        shellGroup.add(makeThemeComboRow(_('Light shell theme'), settings, 'shell-light-theme', shellThemes, { emptyLabel: _('(System default)') }));
+        shellGroup.add(makeThemeComboRow(_('Dark shell theme'), settings, 'shell-dark-theme', shellThemes, { emptyLabel: _('(System default)') }));
 
         const qtGroup = new Adw.PreferencesGroup({
             title: _('Qt5 / Qt6 style'),
-            description: _('Detected style plugins, plus the built-in Fusion/Windows. Requires qt5ct/qt6ct already configured.'),
+            description: _('For apps built with Qt instead of GTK (e.g. Double Commander). Needs qt5ct/qt6ct installed and set up first.'),
             header_suffix: makeHelpButton(
-                _('GNOME settings and gsettings mean nothing to Qt apps — this is a ' +
-                'completely separate settings system. qt5ct/qt6ct are the standard way ' +
-                'to bridge that: they store the current Qt style in qt5ct.conf/qt6ct.conf, ' +
-                'which this writes directly, the same file qt5ct’s own GUI edits.\n\n' +
-                'The list is built from installed style plugins under /usr/lib*/qt{5,6}/' +
-                'plugins/styles, plus Fusion and Windows which are always available. If a ' +
-                'style you use (e.g. kvantum) isn’t detected, the currently-set value is ' +
-                'kept in the list regardless.\n\n' +
-                'If your session has QT_QPA_PLATFORMTHEME=qt5ct (or qt6ct) set, its ' +
-                'platform integration watches this config file and applies the change ' +
-                'live to already-running Qt apps — no restart needed. Without that ' +
-                'integration active, an app just keeps its old style until relaunched.\n\n' +
-                'Flatpak GTK4/libadwaita apps already follow light/dark automatically via ' +
-                'the desktop portal. Flatpak GTK3 apps need either a matching Flatpak theme ' +
-                'extension or "flatpak override --filesystem=~/.themes" to pick up your ' +
-                'legacy theme — neither is handled here, both are one-time setup.')
+                _('Some apps are built with a different toolkit called Qt instead of ' +
+                'GTK (the one GNOME itself uses), and GNOME’s theme settings can’t reach ' +
+                'them at all. To make those switch too, you need a small helper app ' +
+                'called qt5ct (for older Qt apps) or qt6ct (for newer ones) installed ' +
+                'and already set up — this just tells it which style to use for light ' +
+                'and dark mode.\n\n' +
+                'Not sure what to pick? "Fusion" always works, since it comes built ' +
+                'into Qt itself and needs nothing extra installed.\n\n' +
+                'Depending on how qt6ct is set up, already-open apps may switch ' +
+                'instantly or may need to be closed and reopened to pick up the change.')
             ),
         });
         page.add(qtGroup);
         qtGroup.add(makeSwitchRow(_('Also switch Qt5/Qt6 style'), null, settings, 'apply-qt-fix'));
-        qtGroup.add(makeThemeComboRow(_('Light style'), settings, 'qt-light-style', qtStyles));
-        qtGroup.add(makeThemeComboRow(_('Dark style'), settings, 'qt-dark-style', qtStyles));
+        qtGroup.add(makeThemeComboRow(_('Light style'), settings, 'qt-light-style', qtStyles, { alwaysInclude: ['Fusion', 'Windows'] }));
+        qtGroup.add(makeThemeComboRow(_('Dark style'), settings, 'qt-dark-style', qtStyles, { alwaysInclude: ['Fusion', 'Windows'] }));
 
         const fixGroup = new Adw.PreferencesGroup({
-            title: _('libadwaita (GTK4) fix'),
+            title: _('GTK4 (libadwaita) fix'),
             description: _('Files, Settings, Extensions and Tweaks read theme via ~/.config/gtk-4.0, ' +
                 'which most themes only symlink once at install time. This re-links it on every switch.'),
             header_suffix: makeHelpButton(
