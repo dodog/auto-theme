@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: auto-theme@dodog.github.io\n"
+"Project-Id-Version: Auto Theme v0.0.3\n"
 "Report-Msgid-Bugs-To: https://github.com/dodog/auto-theme/issues\n"
-"POT-Creation-Date: 2026-07-23 00:00+0000\n"
-"PO-Revision-Date: 2026-07-23 23:24+0200\n"
+"POT-Creation-Date: 2026-07-26 00:00+0000\n"
+"PO-Revision-Date: 2026-07-26 23:16+0200\n"
 "Last-Translator: Jozef Gaal <preklady@mayday.sk>\n"
 "Language-Team: Jozef Gaal <preklady@mayday.sk>\n"
 "Language: sk_SK\n"
@@ -17,260 +17,369 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.9\n"
 
-#: prefs.js:126
+#: prefs.js:257
 msgid "(none found)"
 msgstr "(žiadna nenájdená)"
 
-#: prefs.js:167
+#: prefs.js:300
 msgid "What does this control?"
 msgstr "Čo táto funkcia ovláda?"
 
-#: prefs.js:185
+#: prefs.js:323
 msgid "How this works"
 msgstr "Ako to funguje"
 
-#: prefs.js:187
+#: prefs.js:325
 msgid ""
 "GNOME theming is split across a few independent layers, each with its own "
 "setting below. Tap the (?) next to a section for details.\n"
 "\n"
-"• GTK3 / legacy — older-style apps (Firefox, GIMP, many utilities).\n"
-"• GTK4 / libadwaita — Files, Settings, Extensions, Tweaks and newer apps; only "
-"follows light/dark automatically, styled via a CSS override.\n"
+"• GTK3 — older-style apps (Firefox, GIMP, many utilities).\n"
+"• GTK4 / libadwaita — Files, Settings, Extensions, Tweaks and newer apps; "
+"only follows light/dark automatically, styled via a CSS override.\n"
 "• Shell — the top bar and overview, separate from all app windows.\n"
-"• Qt5/Qt6 apps — separate settings system entirely; optional support via qt5ct/"
-"qt6ct further down."
+"• Qt5/Qt6 apps — separate settings system entirely; optional support via "
+"qt5ct/qt6ct further down.\n"
+"• Flatpak apps — usually follow along automatically already."
 msgstr ""
 "Vzhľad prostredia GNOME je rozdelený do niekoľkých nezávislých vrstiev, z "
-"ktorých každá má nižšie uvedené vlastné nastavenia. Pre podrobnosti kliknite na "
-"ikonu (?) vedľa príslušnej sekcie.\n"
+"ktorých každá má nižšie uvedené vlastné nastavenia. Pre podrobnosti kliknite "
+"na ikonu (?) vedľa príslušnej sekcie.\n"
 "\n"
-"• GTK3 / legacy — aplikácie staršieho typu (Firefox, GIMP, mnoho nástrojov).\n"
-"• GTK4 / libadwaita — Aplikácie ako Súbory, Nastavenia, Rozšírenia, Vyladenia a "
-"novšie aplikácie; automaticky sa prispôsobujú len režimu svetlý/tmavý, pričom "
-"štýl sa nastavuje pomocou prepisovania CSS.\n"
+"• GTK3 — aplikácie staršieho štýlu (Firefox, GIMP, mnoho nástrojov).\n"
+"• GTK4 / libadwaita — Aplikácie ako Súbory, Nastavenia, Rozšírenia, "
+"Vyladenia a novšie aplikácie; automaticky sa prispôsobujú len režimu svetlý/"
+"tmavý, pričom štýl sa nastavuje pomocou prepisovania CSS.\n"
 "• Shell — horný panel a prehľad, oddelený od všetkých okien aplikácií.\n"
 "• Qt5/Qt6 aplikácie — úplne oddelený systém nastavení; voliteľná podpora cez "
-"qt5ct/qt6ct nižšie."
+"qt5ct/qt6ct nižšie.\n"
+"• Aplikácie Flatpak — zvyčajne sa už automaticky prispôsobujú."
 
-#: prefs.js:199
+#: prefs.js:339
 msgid "Switch times"
 msgstr "Časy prepínania"
 
-#: prefs.js:200
+#: prefs.js:340
 msgid "When to switch to each theme, in 24-hour time"
 msgstr "Kedy prepnúť na jednotlivé témy"
 
-#: prefs.js:203
+#: prefs.js:343
 msgid "Switch to light theme at"
 msgstr "Prepnúť na svetlú tému o"
 
-#: prefs.js:204
+#: prefs.js:344
 msgid "Switch to dark theme at"
 msgstr "Prepnúť na tmavú tému o"
 
-#: prefs.js:207
-msgid "GTK / legacy theme"
-msgstr "GTK / staršia téma"
+#: prefs.js:347
+msgid "GTK3"
+msgstr "GTK3"
 
-#: prefs.js:208
-msgid "Detected in ~/.themes and /usr/share/themes (folders containing gtk-3.0/)"
-msgstr "Nájdené v ~/.themes a /usr/share/themes (priečinky obsahujúce gtk-3.0/)"
-
-#: prefs.js:210
+#: prefs.js:348
 msgid ""
-"Applies to GTK3 apps: Firefox, GIMP, and most traditional apps that aren’t built "
-"with libadwaita. Set via the gtk-theme gsetting, which points GTK at ~/.themes/"
-"<name>/gtk-3.0/.\n"
+"Detected in ~/.themes and /usr/share/themes (folders containing gtk-3.0/)"
+msgstr "Načítané priečinky obsahujúce gtk-3.0 v ~/.themes a /usr/share/themes"
+
+#: prefs.js:350
+msgid ""
+"Applies to GTK3 apps: Firefox, GIMP, and most traditional apps that aren’t "
+"built with libadwaita. Set via the gtk-theme gsetting, which points GTK at "
+"~/.themes/<name>/gtk-3.0/.\n"
 "\n"
-"Does NOT affect Files, Settings, Extensions, Tweaks, or other GTK4/libadwaita "
-"apps — see the libadwaita section below for those."
+"Does NOT affect Files, Settings, Extensions, Tweaks, or other GTK4/"
+"libadwaita apps — see the libadwaita section below for those."
 msgstr ""
-"Platí pre aplikácie GTK3: Firefox, GIMP a väčšinu tradičných aplikácií, ktoré "
-"nie sú vytvorené s použitím knižnice libadwaita. Nastavuje sa prostredníctvom "
-"nastavenia gtk-theme v gsetting, ktoré nasmeruje GTK na adresár ~/.themes/"
-"<názov>/gtk-3.0/.\n"
+"Platí pre aplikácie GTK3: Firefox, GIMP a väčšinu tradičných aplikácií, "
+"ktoré nie sú vytvorené s použitím knižnice libadwaita. Nastavuje sa "
+"prostredníctvom nastavenia gtk-theme v gsetting, ktoré nasmeruje GTK na "
+"adresár ~/.themes/<názov>/gtk-3.0/.\n"
 "\n"
 "NEOVPLYVŇUJE aplikácie Súbory, Nastavenia, Rozšírenia, Vyladenia ani iné "
 "aplikácie GTK4/libadwaita — informácie o nich nájdete v časti o knižnici "
 "libadwaita nižšie."
 
-#: prefs.js:218
+#: prefs.js:358
 msgid "Light theme"
 msgstr "Svetlá téma"
 
-#: prefs.js:219
+#: prefs.js:359
 msgid "Dark theme"
 msgstr "Tmavá téma"
 
-#: prefs.js:222
+#: prefs.js:362
 msgid "Shell theme"
 msgstr "Shell téma"
 
-#: prefs.js:223
+#: prefs.js:363
 msgid ""
-"Detected folders containing gnome-shell/. Requires the User Themes extension."
+"Detected folders containing gnome-shell/, plus a System default option. "
+"Requires the User Themes extension."
 msgstr ""
-"Nájdené priečinky obsahujúce gnome-shell/. Vyžaduje rozšírenie User Themes."
+"Načítané priečinky obsahujúce gnome-shell a predvolená systémová možnosť. "
+"Vyžaduje rozšírenie User Themes."
 
-#: prefs.js:225
+#: prefs.js:365
 msgid ""
-"Applies only to the GNOME Shell top bar, overview, and quick settings — not to "
-"any application window. Set via the User Themes extension’s \"name\" setting, "
-"which loads ~/.themes/<name>/gnome-shell/gnome-shell.css.\n"
+"This only changes the top bar and the overview (the screen you get by "
+"pressing the Super/Windows key) — not the look of your actual apps.\n"
 "\n"
-"If the User Themes extension isn’t installed/enabled, this setting is silently "
-"skipped (check the journal for a message about it)."
+"It works through another extension called \"User Themes.\" Picking a name "
+"here just tells User Themes which theme folder to load.\n"
+"\n"
+"\"(System default)\" means \"don’t use a custom one, just use GNOME’s own "
+"built-in look.\" That’s also why you won’t see \"Adwaita\" as a pickable "
+"name here even though it’s the default — it’s built in, not a folder on disk "
+"like other themes are, so pick \"(System default)\" instead when you want "
+"it.\n"
+"\n"
+"If nothing happens when this switches, make sure the \"User Themes\" "
+"extension is installed and turned on."
 msgstr ""
-"Platí iba pre horný panel GNOME Shell, prehľad a rýchle nastavenia — nie pre "
-"okná aplikácií. Nastavuje sa prostredníctvom nastavenia „name“ v rozšírení User "
-"Themes, ktoré načíta súbor ~/.themes/<name>/gnome-shell/gnome-shell.css.\n"
+"Týmto sa zmení iba horný panel a prehľad (obrazovka, ktorá sa zobrazí po "
+"stlačení klávesy Super/Windows) — nie vzhľad samotných aplikácií.\n"
 "\n"
-"Ak nie je rozšírenie User Themes nainštalované alebo zapnuté, toto nastavenie sa "
-"bez upozornenia preskočí (správu o tom nájdete v denníku)."
+"Funguje to prostredníctvom ďalšieho rozšírenia s názvom „User Themes“. Výber "
+"názvu tu slúži len na to, aby sa rozšíreniu User Themes určilo, ktorú zložku "
+"s témou má načítať.\n"
+"\n"
+"„(Systémové predvolené)“ znamená „nepoužívať vlastný motív, ale iba vlastný "
+"integrovaný vzhľad prostredia GNOME“. To je aj dôvod, prečo tu neuvidíte "
+"„Adwaita“ ako voliteľný názov, hoci je to predvolená téma – je zabudovaná, "
+"nie je to zložka na disku ako ostatné témy, takže ak ju chcete použiť, "
+"vyberte namiesto toho „(Predvolené nastavenie systému)“.\n"
+"\n"
+"Ak sa po prepnutí nič nedeje, uistite sa, že je rozšírenie „User Themes“ "
+"nainštalované a zapnuté."
 
-#: prefs.js:233
+#: prefs.js:379
 msgid "Light shell theme"
 msgstr "Svetlá shell téma"
 
-#: prefs.js:234
+#: prefs.js:379 prefs.js:380
+msgid "(System default)"
+msgstr "(Predvolené systémom)"
+
+#: prefs.js:380
 msgid "Dark shell theme"
 msgstr "Tmavá shell téma"
 
-#: prefs.js:237
+#: prefs.js:383
 msgid "Qt5 / Qt6 style"
 msgstr "Qt5 / Qt6 štýl"
 
-#: prefs.js:238
+#: prefs.js:384
 msgid ""
-"Detected style plugins, plus the built-in Fusion/Windows. Requires qt5ct/qt6ct "
-"already configured."
+"For apps built with Qt instead of GTK (e.g. Double Commander). Needs qt5ct/"
+"qt6ct installed and set up first."
 msgstr ""
-"Nájdené štýlové pluginy, plus vstavané Fusion/Windows. Vyžaduje už "
-"nakonfigurovaný qt5ct/qt6ct."
+"Pre aplikácie vytvorené pomocou Qt namiesto GTK (napr. Double Commander). "
+"Najskôr je potrebné nainštalovať a nakonfigurovať qt5ct/qt6ct."
 
-#: prefs.js:240
+#: prefs.js:386
 msgid ""
-"GNOME settings and gsettings mean nothing to Qt apps — this is a completely "
-"separate settings system. qt5ct/qt6ct are the standard way to bridge that: they "
-"store the current Qt style in qt5ct.conf/qt6ct.conf, which this writes directly, "
-"the same file qt5ct’s own GUI edits.\n"
+"Some apps are built with a different toolkit called Qt instead of GTK (the "
+"one GNOME itself uses), and GNOME’s theme settings can’t reach them at all. "
+"To make those switch too, you need a small helper app called qt5ct (for "
+"older Qt apps) or qt6ct (for newer ones) installed and already set up — this "
+"just tells it which style to use for light and dark mode.\n"
 "\n"
-"The list is built from installed style plugins under /usr/lib*/qt{5,6}/plugins/"
-"styles, plus Fusion and Windows which are always available. If a style you use "
-"(e.g. kvantum) isn’t detected, the currently-set value is kept in the list "
-"regardless.\n"
+"Not sure what to pick? \"Fusion\" always works, since it comes built into Qt "
+"itself and needs nothing extra installed.\n"
 "\n"
-"If your session has QT_QPA_PLATFORMTHEME=qt5ct (or qt6ct) set, its platform "
-"integration watches this config file and applies the change live to already-"
-"running Qt apps — no restart needed. Without that integration active, an app "
-"just keeps its old style until relaunched.\n"
-"\n"
-"Flatpak GTK4/libadwaita apps already follow light/dark automatically via the "
-"desktop portal. Flatpak GTK3 apps need either a matching Flatpak theme extension "
-"or \"flatpak override --filesystem=~/.themes\" to pick up your legacy theme — "
-"neither is handled here, both are one-time setup."
+"Depending on how qt6ct is set up, already-open apps may switch instantly or "
+"may need to be closed and reopened to pick up the change."
 msgstr ""
-"Nastavenia GNOME a gsettings pre Qt aplikácie nič neznamenajú — toto je úplne "
-"oddelený systém nastavení. Qt5ct/qt6ct sú štandardným spôsobom ako to preklenúť: "
-"ukladajú aktuálny Qt štýl do qt5ct.conf/qt6ct.conf, do ktorého toto priamo "
-"zapisuje, rovnaký súbor, ktorý upravuje aj vlastné GUI qt5ct.\n"
+"Niektoré aplikácie sú vytvorené pomocou iného vývojárskeho nástroja s názvom "
+"Qt namiesto GTK (ktorý používa samotné prostredie GNOME) a nastavenia tém "
+"GNOME na ne nemajú žiadny vplyv. Aby sa tieto aplikácie tiež prispôsobili, "
+"je potrebné mať nainštalovanú a nakonfigurovanú malú pomocnú aplikáciu s "
+"názvom qt5ct (pre staršie aplikácie Qt) alebo qt6ct (pre novšie) – tá "
+"jednoducho určí, ktorý štýl sa má použiť pre svetlý a tmavý režim.\n"
 "\n"
-"Zoznam je zostavený z nainštalovaných štýlových pluginov v /usr/lib*/qt{5,6}/"
-"plugins/styles, plus Fusion a Windows, ktoré sú vždy dostupné. Ak štýl, ktorý "
-"používate (napr. kvantum), nie je nájdený, aktuálne nastavená hodnota sa v "
-"zozname aj tak zachová.\n"
+"Neviete, čo si vybrať? Štýl „Fusion“ funguje vždy, pretože je integrovaný "
+"priamo v Qt a nevyžaduje žiadnu ďalšiu inštaláciu.\n"
 "\n"
-"Ak máte v relácii nastavenú premennú QT_QPA_PLATFORMTHEME=qt5ct (alebo qt6ct), "
-"integrácia s platformou sleduje tento konfiguračný súbor a zmeny aplikuje v "
-"reálnom čase na už spustené aplikácie Qt — nie je potrebné ich reštartovať. Ak "
-"táto integrácia nie je aktívna, aplikácia si zachová svoj pôvodný vzhľad až do "
-"opätovného spustenia.\n"
-" \n"
-"\n"
-"Aplikácie Flatpak GTK4/libadwaita už automaticky používajú svetlý/tmavý režim "
-"prostredníctvom portálu pracovnej plochy. Aplikácie Flatpak GTK3 potrebujú buď "
-"zodpovedajúce rozšírenie témy Flatpak, alebo príkaz „flatpak override --"
-"filesystem=~/.themes“, aby mohli použiť vašu pôvodnú tému — ani jedno z týchto "
-"riešení sa tu nerieši, v oboch prípadoch ide o jednorazové nastavenie."
+"V závislosti od toho, ako je qt6ct nakonfigurované, sa už otvorené aplikácie "
+"môžu prepnúť okamžite, alebo ich bude potrebné zatvoriť a znovu otvoriť, aby "
+"sa zmena prejavila."
 
-#: prefs.js:259
+#: prefs.js:399
 msgid "Also switch Qt5/Qt6 style"
 msgstr "Prepínať tiež Qt5/Qt6 štýl"
 
-#: prefs.js:260
+#: prefs.js:400
 msgid "Light style"
 msgstr "Svetlý štýl"
 
-#: prefs.js:261
+#: prefs.js:401
 msgid "Dark style"
 msgstr "Tmavý štýl"
 
-#: prefs.js:264
-msgid "libadwaita (GTK4) fix"
-msgstr "Úprava libadwaita (GTK4)"
+#: prefs.js:404
+msgid "GTK4 (libadwaita) fix"
+msgstr "GTK4 (libadwaita) úprava"
 
-#: prefs.js:265
+#: prefs.js:405
 msgid ""
-"Files, Settings, Extensions and Tweaks read theme via ~/.config/gtk-4.0, which "
-"most themes only symlink once at install time. This re-links it on every switch."
+"Files, Settings, Extensions and Tweaks read theme via ~/.config/gtk-4.0, "
+"which most themes only symlink once at install time. This re-links it on "
+"every switch."
 msgstr ""
-"Súbory, Nastavenia, Rozšírenia a Vyladenia načítajú tému cez ~/.config/gtk-4.0, "
-"ktorú väčšina tém len raz symbolicky prepojí pri inštalácii. Toto ju znovu "
-"prepojí pri každom prepnutí."
+"Súbory, Nastavenia, Rozšírenia a Vyladenia načítajú tému cez ~/.config/"
+"gtk-4.0, ktorú väčšina tém len raz symbolicky prepojí pri inštalácii. Toto "
+"ju znovu prepojí pri každom prepnutí."
 
-#: prefs.js:268
+#: prefs.js:408
 msgid ""
-"GTK4/libadwaita apps (Files, Settings, Extensions app, Tweaks, and most newer "
-"apps) deliberately don’t support full re-theming — they only follow light/dark "
-"mode and an accent color. The one override hook they still read is ~/.config/"
-"gtk-4.0/gtk.css and gtk-dark.css.\n"
+"GTK4/libadwaita apps (Files, Settings, Extensions app, Tweaks, and most "
+"newer apps) deliberately don’t support full re-theming — they only follow "
+"light/dark mode and an accent color. The one override hook they still read "
+"is ~/.config/gtk-4.0/gtk.css and gtk-dark.css.\n"
 "\n"
-"This option re-links those files to your chosen GTK theme’s own gtk-4.0/ output "
-"on every switch, and can append custom CSS to them (below) — that’s how "
-"libadwaita apps end up looking like your legacy theme instead of stock Adwaita. "
-"Some themes don’t ship a gtk-4.0/ folder at all; if so this is skipped "
-"harmlessly and apps fall back to stock Adwaita light/dark."
+"This option re-links those files to your chosen GTK theme’s own gtk-4.0/ "
+"output on every switch, and can append custom CSS to them (below) — that’s "
+"how libadwaita apps end up looking like your legacy theme instead of stock "
+"Adwaita. Some themes don’t ship a gtk-4.0/ folder at all; if so this is "
+"skipped harmlessly and apps fall back to stock Adwaita light/dark."
 msgstr ""
-"Aplikácie GTK4/libadwaita (Súbory, Nastavenia, Rozšírenia, Vyladenia a väčšina "
-"novších aplikácií) zámerne nepodporujú úplnú zmenu vzhľadu – prispôsobujú sa len "
-"režimu svetlý/tmavý a kontrastnej farbe. Jediným bodom, kde preberajú "
-"nastavenia, sú súbory ~/.config/gtk-4.0/gtk.css a gtk-dark.css.\n"
+"Aplikácie GTK4/libadwaita (Súbory, Nastavenia, Rozšírenia, Vyladenia a "
+"väčšina novších aplikácií) zámerne nepodporujú úplnú zmenu vzhľadu – "
+"prispôsobujú sa len režimu svetlý/tmavý a kontrastnej farbe. Jediným bodom, "
+"kde preberajú nastavenia, sú súbory ~/.config/gtk-4.0/gtk.css a gtk-"
+"dark.css.\n"
 "\n"
-"Táto voľba pri každom prepnutí prepojí tieto súbory s výstupom gtk-4.0/ vášho "
-"zvolenej GTK témy a môže k nim pridať vlastný CSS kód (nižšie) — takto aplikácie "
-"libadwaita nakoniec vyzerajú ako vaša pôvodná téma namiesto štandardnej Adwaita. "
-"Niektoré témy vôbec neobsahujú priečinok gtk-4.0/; v takom prípade sa tento krok "
-"bez problémov preskočí a aplikácie sa vrátia k štandardnej svetlej alebo tmavej "
-"verzii Adwaita."
+"Táto voľba pri každom prepnutí prepojí tieto súbory s výstupom gtk-4.0/ "
+"vášho zvolenej GTK témy a môže k nim pridať vlastný CSS kód (nižšie) — takto "
+"aplikácie libadwaita nakoniec vyzerajú ako vaša pôvodná téma namiesto "
+"štandardnej Adwaita. Niektoré témy vôbec neobsahujú priečinok gtk-4.0/; v "
+"takom prípade sa tento krok bez problémov preskočí a aplikácie sa vrátia k "
+"štandardnej svetlej alebo tmavej verzii Adwaita."
 
-#: prefs.js:280
+#: prefs.js:420
 msgid "Re-link GTK4 theme files"
 msgstr "Prepojiť GTK4 súbory tém"
 
-#: prefs.js:281
+#: prefs.js:421
 msgid "Append custom CSS below"
 msgstr "Pripojiť vlastné CSS nižšie"
 
-#: prefs.js:284
+#: prefs.js:424
 msgid "Custom CSS"
 msgstr "Vlastné CSS"
 
-#: prefs.js:285
+#: prefs.js:425
 msgid ""
 "Appended once (not duplicated on repeat switches) to gtk.css and gtk-dark.css"
-msgstr "Pripojené k gtk.css a gtk-dark.css"
+msgstr "Pripojí sa ku gtk.css a gtk-dark.css"
 
-#: prefs.js:309
+#: prefs.js:449
 msgid "App restart"
 msgstr "Reštart aplikácií"
 
-#: prefs.js:310
-msgid "Some apps cache the old theme/CSS and need restarting to pick up changes"
+#: prefs.js:450
+msgid ""
+"Some apps cache the old theme/CSS and need restarting to pick up changes"
 msgstr ""
 "Niektoré aplikácie ukladajú starú šablónu/CSS do vyrovnávacej pamäte a je "
 "potrebné ich reštartovať, aby sa zmeny prejavili"
 
-#: prefs.js:313
+#: prefs.js:453
 msgid "Restart Nautilus / Settings / Extensions app after switching"
 msgstr "Reštartovať aplikácie Súbory / Nastavenia / Rozšírenia po prepnutí"
+
+#~ msgid "GTK / legacy theme"
+#~ msgstr "GTK / staršia téma"
+
+#~ msgid ""
+#~ "Applies only to the GNOME Shell top bar, overview, and quick settings — "
+#~ "not to any application window. Set via the User Themes extension’s "
+#~ "\"name\" setting, which loads ~/.themes/<name>/gnome-shell/gnome-"
+#~ "shell.css.\n"
+#~ "\n"
+#~ "\"(System default)\" sets that to empty, which tells the User Themes "
+#~ "extension to use GNOME Shell’s own built-in theme rather than a custom "
+#~ "one. This is normal and expected for Adwaita specifically — unlike GTK "
+#~ "themes, the default Shell theme is compiled into gnome-shell itself, not "
+#~ "shipped as a folder, so it won’t appear in the detected list even when "
+#~ "it’s exactly what you want.\n"
+#~ "\n"
+#~ "If the User Themes extension isn’t installed/enabled, this setting is "
+#~ "silently skipped (check the journal for a message about it)."
+#~ msgstr ""
+#~ "Platí iba pre horný panel GNOME Shell, prehľad a rýchle nastavenia — nie "
+#~ "pre okná aplikácií. Nastavuje sa prostredníctvom nastavenia „name“ v "
+#~ "rozšírení User Themes, ktoré načíta súbor ~/.themes/<name>/gnome-shell/"
+#~ "gnome-shell.css.\n"
+#~ "\n"
+#~ "„(Predvolené systémom)“ nastaví túto položku na prázdnu hodnotu, čím sa "
+#~ "rozšíreniu User Themes nariadi, aby namiesto vlastného motívu používalo "
+#~ "vstavaný motív GNOME Shell. V prípade motívu Adwaita je to normálne a "
+#~ "očakávané – na rozdiel od motívov GTK je predvolený motív Shellu "
+#~ "zakompilovaný priamo do samotného gnome-shellu a nie je dodávaný ako "
+#~ "zložka, takže sa nezobrazí v zozname detekovaných motívov, aj keď je to "
+#~ "presne to, čo chcete.\n"
+#~ "\n"
+#~ "Ak nie je rozšírenie User Themes nainštalované alebo zapnuté, toto "
+#~ "nastavenie sa bez upozornenia preskočí (správu o tom nájdete v denníku)."
+
+#~ msgid ""
+#~ "Detected from installed style plugins’ own metadata, plus the built-in "
+#~ "Fusion/Windows. Requires qt5ct/qt6ct already configured."
+#~ msgstr ""
+#~ "Zistené na základe vlastných metadát nainštalovaných pluginov pre štýly a "
+#~ "vstavaného modulu Fusion/Windows. Vyžaduje si, aby boli moduly qt5ct/"
+#~ "qt6ct už nakonfigurované."
+
+#~ msgid ""
+#~ "GNOME settings and gsettings mean nothing to Qt apps — this is a "
+#~ "completely separate settings system. qt5ct/qt6ct are the standard way to "
+#~ "bridge that: they store the current Qt style in qt5ct.conf/qt6ct.conf, "
+#~ "which this writes directly, the same file qt5ct’s own GUI edits.\n"
+#~ "\n"
+#~ "The list is read from each installed style plugin’s own embedded metadata "
+#~ "under common Qt5/Qt6 plugin paths (including Arch/Manjaro’s unversioned "
+#~ "\"qt\" directory), which is how a single plugin providing several named "
+#~ "styles — e.g. Adwaita, Adwaita-Dark, and high-contrast variants from one "
+#~ "file — shows up as separate choices. Fusion and Windows are always listed "
+#~ "since they ship inside Qt itself. If a style still isn’t detected, the "
+#~ "currently-set value is kept in the list regardless.\n"
+#~ "\n"
+#~ "If your session has QT_QPA_PLATFORMTHEME=qt5ct (or qt6ct) set, its "
+#~ "platform integration watches this config file and applies the change live "
+#~ "to already-running Qt apps — no restart needed. Without that integration "
+#~ "active, an app just keeps its old style until relaunched.\n"
+#~ "\n"
+#~ "Flatpak GTK4/libadwaita apps already follow light/dark automatically via "
+#~ "the desktop portal. Flatpak GTK3 apps need either a matching Flatpak "
+#~ "theme extension or \"flatpak override --filesystem=~/.themes\" to pick up "
+#~ "your legacy theme — neither is handled here, both are one-time setup."
+#~ msgstr ""
+#~ "Nastavenia GNOME a gsettings pre Qt aplikácie nič neznamenajú — toto je "
+#~ "úplne oddelený systém nastavení. Qt5ct/qt6ct sú štandardným spôsobom ako "
+#~ "to preklenúť: ukladajú aktuálny Qt štýl do qt5ct.conf/qt6ct.conf, do "
+#~ "ktorého toto priamo zapisuje, rovnaký súbor, ktorý upravuje aj vlastné "
+#~ "GUI qt5ct.\n"
+#~ "\n"
+#~ "Zoznam sa načíta z vlastných vložených metadát každého nainštalovaného "
+#~ "doplnku štýlu, ktoré sa nachádzajú v bežných cestách doplnkov Qt5/Qt6 "
+#~ "(vrátane adresára „qt“ v Arch/Manjaro bez špecifikácie verzie), a práve "
+#~ "vďaka tomu sa jeden doplnok poskytujúci viacero pomenovaných štýlov — "
+#~ "napr. Adwaita, Adwaita-Dark a varianty s vysokým kontrastom z jedného "
+#~ "súboru — zobrazuje ako samostatné možnosti. Štýly Fusion a Windows sú "
+#~ "vždy uvedené v zozname, keďže sú súčasťou samotného Qt. Ak sa štýl stále "
+#~ "nedokáže rozpoznať, aktuálne nastavená hodnota zostane v zozname bez "
+#~ "ohľadu na to.\n"
+#~ "\n"
+#~ "Ak máte v relácii nastavenú premennú QT_QPA_PLATFORMTHEME=qt5ct (alebo "
+#~ "qt6ct), integrácia s platformou sleduje tento konfiguračný súbor a zmeny "
+#~ "aplikuje v reálnom čase na už spustené aplikácie Qt — nie je potrebné ich "
+#~ "reštartovať. Ak táto integrácia nie je aktívna, aplikácia si zachová svoj "
+#~ "pôvodný vzhľad až do opätovného spustenia.\n"
+#~ " \n"
+#~ "\n"
+#~ "Aplikácie Flatpak GTK4/libadwaita už automaticky používajú svetlý/tmavý "
+#~ "režim prostredníctvom portálu pracovnej plochy. Aplikácie Flatpak GTK3 "
+#~ "potrebujú buď zodpovedajúce rozšírenie témy Flatpak, alebo príkaz "
+#~ "„flatpak override --filesystem=~/.themes“, aby mohli použiť vašu pôvodnú "
+#~ "tému — ani jedno z týchto riešení sa tu nerieši, v oboch prípadoch ide o "
+#~ "jednorazové nastavenie."

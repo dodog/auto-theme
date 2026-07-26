@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: auto-theme@dodog.github.io\n"
 "Report-Msgid-Bugs-To: https://github.com/dodog/auto-theme/issues\n"
-"POT-Creation-Date: 2026-07-23 00:00+0000\n"
+"POT-Creation-Date: 2026-07-26 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,155 +15,162 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: prefs.js:126
+#: prefs.js:257
 msgid "(none found)"
 msgstr ""
 
-#: prefs.js:167
+#: prefs.js:300
 msgid "What does this control?"
 msgstr ""
 
-#: prefs.js:185
+#: prefs.js:323
 msgid "How this works"
 msgstr ""
 
-#: prefs.js:187
+#: prefs.js:325
 msgid "GNOME theming is split across a few independent layers, each with its own setting below. Tap the (?) next to a section for details.\n"
 "\n"
-"• GTK3 / legacy — older-style apps (Firefox, GIMP, many utilities).\n"
+"• GTK3 — older-style apps (Firefox, GIMP, many utilities).\n"
 "• GTK4 / libadwaita — Files, Settings, Extensions, Tweaks and newer apps; only follows light/dark automatically, styled via a CSS override.\n"
 "• Shell — the top bar and overview, separate from all app windows.\n"
-"• Qt5/Qt6 apps — separate settings system entirely; optional support via qt5ct/qt6ct further down."
+"• Qt5/Qt6 apps — separate settings system entirely; optional support via qt5ct/qt6ct further down.\n"
+"• Flatpak apps — usually follow along automatically already."
 msgstr ""
 
-#: prefs.js:199
+#: prefs.js:339
 msgid "Switch times"
 msgstr ""
 
-#: prefs.js:200
+#: prefs.js:340
 msgid "When to switch to each theme, in 24-hour time"
 msgstr ""
 
-#: prefs.js:203
+#: prefs.js:343
 msgid "Switch to light theme at"
 msgstr ""
 
-#: prefs.js:204
+#: prefs.js:344
 msgid "Switch to dark theme at"
 msgstr ""
 
-#: prefs.js:207
-msgid "GTK / legacy theme"
+#: prefs.js:347
+msgid "GTK3"
 msgstr ""
 
-#: prefs.js:208
+#: prefs.js:348
 msgid "Detected in ~/.themes and /usr/share/themes (folders containing gtk-3.0/)"
 msgstr ""
 
-#: prefs.js:210
+#: prefs.js:350
 msgid "Applies to GTK3 apps: Firefox, GIMP, and most traditional apps that aren’t built with libadwaita. Set via the gtk-theme gsetting, which points GTK at ~/.themes/<name>/gtk-3.0/.\n"
 "\n"
 "Does NOT affect Files, Settings, Extensions, Tweaks, or other GTK4/libadwaita apps — see the libadwaita section below for those."
 msgstr ""
 
-#: prefs.js:218
+#: prefs.js:358
 msgid "Light theme"
 msgstr ""
 
-#: prefs.js:219
+#: prefs.js:359
 msgid "Dark theme"
 msgstr ""
 
-#: prefs.js:222
+#: prefs.js:362
 msgid "Shell theme"
 msgstr ""
 
-#: prefs.js:223
-msgid "Detected folders containing gnome-shell/. Requires the User Themes extension."
+#: prefs.js:363
+msgid "Detected folders containing gnome-shell/, plus a System default option. Requires the User Themes extension."
 msgstr ""
 
-#: prefs.js:225
-msgid "Applies only to the GNOME Shell top bar, overview, and quick settings — not to any application window. Set via the User Themes extension’s \"name\" setting, which loads ~/.themes/<name>/gnome-shell/gnome-shell.css.\n"
+#: prefs.js:365
+msgid "This only changes the top bar and the overview (the screen you get by pressing the Super/Windows key) — not the look of your actual apps.\n"
 "\n"
-"If the User Themes extension isn’t installed/enabled, this setting is silently skipped (check the journal for a message about it)."
+"It works through another extension called \"User Themes.\" Picking a name here just tells User Themes which theme folder to load.\n"
+"\n"
+"\"(System default)\" means \"don’t use a custom one, just use GNOME’s own built-in look.\" That’s also why you won’t see \"Adwaita\" as a pickable name here even though it’s the default — it’s built in, not a folder on disk like other themes are, so pick \"(System default)\" instead when you want it.\n"
+"\n"
+"If nothing happens when this switches, make sure the \"User Themes\" extension is installed and turned on."
 msgstr ""
 
-#: prefs.js:233
+#: prefs.js:379
 msgid "Light shell theme"
 msgstr ""
 
-#: prefs.js:234
+#: prefs.js:379 prefs.js:380
+msgid "(System default)"
+msgstr ""
+
+#: prefs.js:380
 msgid "Dark shell theme"
 msgstr ""
 
-#: prefs.js:237
+#: prefs.js:383
 msgid "Qt5 / Qt6 style"
 msgstr ""
 
-#: prefs.js:238
-msgid "Detected style plugins, plus the built-in Fusion/Windows. Requires qt5ct/qt6ct already configured."
+#: prefs.js:384
+msgid "For apps built with Qt instead of GTK (e.g. Double Commander). Needs qt5ct/qt6ct installed and set up first."
 msgstr ""
 
-#: prefs.js:240
-msgid "GNOME settings and gsettings mean nothing to Qt apps — this is a completely separate settings system. qt5ct/qt6ct are the standard way to bridge that: they store the current Qt style in qt5ct.conf/qt6ct.conf, which this writes directly, the same file qt5ct’s own GUI edits.\n"
+#: prefs.js:386
+msgid "Some apps are built with a different toolkit called Qt instead of GTK (the one GNOME itself uses), and GNOME’s theme settings can’t reach them at all. To make those switch too, you need a small helper app called qt5ct (for older Qt apps) or qt6ct (for newer ones) installed and already set up — this just tells it which style to use for light and dark mode.\n"
 "\n"
-"The list is built from installed style plugins under /usr/lib*/qt{5,6}/plugins/styles, plus Fusion and Windows which are always available. If a style you use (e.g. kvantum) isn’t detected, the currently-set value is kept in the list regardless.\n"
+"Not sure what to pick? \"Fusion\" always works, since it comes built into Qt itself and needs nothing extra installed.\n"
 "\n"
-"If your session has QT_QPA_PLATFORMTHEME=qt5ct (or qt6ct) set, its platform integration watches this config file and applies the change live to already-running Qt apps — no restart needed. Without that integration active, an app just keeps its old style until relaunched.\n"
-"\n"
-"Flatpak GTK4/libadwaita apps already follow light/dark automatically via the desktop portal. Flatpak GTK3 apps need either a matching Flatpak theme extension or \"flatpak override --filesystem=~/.themes\" to pick up your legacy theme — neither is handled here, both are one-time setup."
+"Depending on how qt6ct is set up, already-open apps may switch instantly or may need to be closed and reopened to pick up the change."
 msgstr ""
 
-#: prefs.js:259
+#: prefs.js:399
 msgid "Also switch Qt5/Qt6 style"
 msgstr ""
 
-#: prefs.js:260
+#: prefs.js:400
 msgid "Light style"
 msgstr ""
 
-#: prefs.js:261
+#: prefs.js:401
 msgid "Dark style"
 msgstr ""
 
-#: prefs.js:264
-msgid "libadwaita (GTK4) fix"
+#: prefs.js:404
+msgid "GTK4 (libadwaita) fix"
 msgstr ""
 
-#: prefs.js:265
+#: prefs.js:405
 msgid "Files, Settings, Extensions and Tweaks read theme via ~/.config/gtk-4.0, which most themes only symlink once at install time. This re-links it on every switch."
 msgstr ""
 
-#: prefs.js:268
+#: prefs.js:408
 msgid "GTK4/libadwaita apps (Files, Settings, Extensions app, Tweaks, and most newer apps) deliberately don’t support full re-theming — they only follow light/dark mode and an accent color. The one override hook they still read is ~/.config/gtk-4.0/gtk.css and gtk-dark.css.\n"
 "\n"
 "This option re-links those files to your chosen GTK theme’s own gtk-4.0/ output on every switch, and can append custom CSS to them (below) — that’s how libadwaita apps end up looking like your legacy theme instead of stock Adwaita. Some themes don’t ship a gtk-4.0/ folder at all; if so this is skipped harmlessly and apps fall back to stock Adwaita light/dark."
 msgstr ""
 
-#: prefs.js:280
+#: prefs.js:420
 msgid "Re-link GTK4 theme files"
 msgstr ""
 
-#: prefs.js:281
+#: prefs.js:421
 msgid "Append custom CSS below"
 msgstr ""
 
-#: prefs.js:284
+#: prefs.js:424
 msgid "Custom CSS"
 msgstr ""
 
-#: prefs.js:285
+#: prefs.js:425
 msgid "Appended once (not duplicated on repeat switches) to gtk.css and gtk-dark.css"
 msgstr ""
 
-#: prefs.js:309
+#: prefs.js:449
 msgid "App restart"
 msgstr ""
 
-#: prefs.js:310
+#: prefs.js:450
 msgid "Some apps cache the old theme/CSS and need restarting to pick up changes"
 msgstr ""
 
-#: prefs.js:313
+#: prefs.js:453
 msgid "Restart Nautilus / Settings / Extensions app after switching"
 msgstr ""
