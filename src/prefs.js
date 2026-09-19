@@ -1,235 +1,21 @@
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 
 import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-// A theme "counts" for a given purpose if its directory contains the
-// matching subfolder: gtk-3.0/ for legacy GTK themes, gnome-shell/ for
-// Shell themes. Scans ~/.themes and the system theme dirs.
-function listThemes(markerSubdir) {
-    const dirs = [
-        GLib.build_filenamev([GLib.get_home_dir(), '.themes']),
-        '/usr/share/themes',
-        '/usr/local/share/themes',
-    ];
-    const found = new Set();
+import { listThemes, listQtStyles, sortAlpha } from './themeDetection.js';
+import { makeTimeRow } from './timeRow.js';
 
-    for (const dir of dirs) {
-        const dirFile = Gio.File.new_for_path(dir);
-        if (!dirFile.query_exists(null))
-            continue;
-        try {
-            const it = dirFile.enumerate_children('standard::name,standard::type', Gio.FileQueryInfoFlags.NONE, null);
-            let info;
-            while ((info = it.next_file(null)) !== null) {
-                if (info.get_file_type() !== Gio.FileType.DIRECTORY)
-                    continue;
-                const name = info.get_name();
-                const markerPath = GLib.build_filenamev([dir, name, markerSubdir]);
-                if (Gio.File.new_for_path(markerPath).query_exists(null))
-                    found.add(name);
-            }
-        } catch (e) {
-            // unreadable directory, skip it
-        }
-    }
-
-    return [...found].sort((a, b) => a.localeCompare(b));
-}
-
-// Scans the common plugin install paths across distros/Qt5/Qt6.
-function buildQtPluginDirs() {
-    const libBases = [
-        '/usr/lib', '/usr/lib64', '/usr/local/lib',
-        '/usr/lib/x86_64-linux-gnu', '/usr/lib/aarch64-linux-gnu', '/usr/lib/i386-linux-gnu',
-    ];
-    const qtSubdirs = ['qt5/plugins/styles', 'qt6/plugins/styles', 'qt/plugins/styles'];
-
-    const dirs = [];
-    for (const base of libBases) {
-        for (const sub of qtSubdirs)
-            dirs.push(GLib.build_filenamev([base, sub]));
-    }
-    return dirs;
-}
-
-// This reads CBOR (RFC 8949) major type 3 (text string) and major type 4 (array) to get the themes names.
-function readCborUint(bytes, pos, headerByte, base) {
-    const info = headerByte - base;
-    if (info <= 23)
-        return [info, pos];
-    if (info === 24)
-        return [bytes[pos], pos + 1];
-    if (info === 25)
-        return [(bytes[pos] << 8) | bytes[pos + 1], pos + 2];
-    return [null, pos]; // longer forms aren't expected for a short style-name list
-}
-
-function readCborTextString(bytes, pos) {
-    const header = bytes[pos];
-    if (header < 0x60 || header > 0x7b)
-        return [null, pos];
-    const [len, afterLen] = readCborUint(bytes, pos + 1, header, 0x60);
-    if (len === null)
-        return [null, pos];
-    const strBytes = bytes.slice(afterLen, afterLen + len);
-    return [new TextDecoder('utf-8', { fatal: false }).decode(strBytes), afterLen + len];
-}
-
-// Byte sequence for the CBOR-encoded text string "Keys": header 0x64
-// (short string, length 4) followed by the literal bytes K e y s.
-const CBOR_KEYS_MARKER = [0x64, 0x4b, 0x65, 0x79, 0x73];
-
-function readCborStyleKeys(bytes) {
-    let keysPos = -1;
-    outer:
-    for (let i = 0; i <= bytes.length - CBOR_KEYS_MARKER.length; i++) {
-        for (let j = 0; j < CBOR_KEYS_MARKER.length; j++) {
-            if (bytes[i + j] !== CBOR_KEYS_MARKER[j])
-                continue outer;
-        }
-        keysPos = i + CBOR_KEYS_MARKER.length;
-        break;
-    }
-    if (keysPos === -1)
-        return [];
-
-    const header = bytes[keysPos];
-    if (header < 0x80 || header > 0x9b)
-        return []; // not immediately followed by an array — not the layout we expect
-    const [count, afterHeader] = readCborUint(bytes, keysPos + 1, header, 0x80);
-    if (count === null)
-        return [];
-
-    const keys = [];
-    let pos = afterHeader;
-    for (let i = 0; i < count && i < 20; i++) {
-        const [text, next] = readCborTextString(bytes, pos);
-        if (text === null)
-            break;
-        keys.push(text);
-        pos = next;
-    }
-    return keys;
-}
-
-// Fallback for older, pre-CBOR Qt5 builds that embedded metadata as literal
-// JSON text instead.
-function readJsonStyleKeys(bytes) {
-    const text = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
-    const m = /"Keys"\s*:\s*\[([^\]]*)\]/.exec(text);
-    if (!m)
-        return [];
-    const keys = [];
-    const keyRe = /"([^"]+)"/g;
-    let km;
-    while ((km = keyRe.exec(m[1])) !== null)
-        keys.push(km[1]);
-    return keys;
-}
-
-function readPluginStyleKeys(path) {
-    try {
-        const [ok, bytes] = GLib.file_get_contents(path);
-        if (!ok)
-            return [];
-        const cborKeys = readCborStyleKeys(bytes);
-        return cborKeys.length > 0 ? cborKeys : readJsonStyleKeys(bytes);
-    } catch (e) {
-        return [];
-    }
-}
-
-function listQtStyles() {
-    const found = new Set();
-
-    for (const dir of buildQtPluginDirs()) {
-        const dirFile = Gio.File.new_for_path(dir);
-        if (!dirFile.query_exists(null))
-            continue;
-        try {
-            const it = dirFile.enumerate_children('standard::name', Gio.FileQueryInfoFlags.NONE, null);
-            let info;
-            while ((info = it.next_file(null)) !== null) {
-                const name = info.get_name();
-                if (!name.endsWith('.so'))
-                    continue;
-
-                const keys = readPluginStyleKeys(GLib.build_filenamev([dir, name]));
-                if (keys.length > 0) {
-                    for (const k of keys)
-                        found.add(k);
-                } else {
-                    // Metadata scan found nothing — fall back to a filename
-                    // guess. Handles both "libfoo.so" and "foo.so" (some
-                    // packages, like adwaita-qt's, ship without the "lib" prefix).
-                    const m = /^(?:lib)?(.+)\.so$/.exec(name);
-                    if (m)
-                        found.add(m[1]);
-                }
-            }
-        } catch (e) {
-            // unreadable directory, skip it
-        }
-    }
-
-    return [...found].sort((a, b) => a.localeCompare(b));
-}
-
-function makeTimeRow(title, settings, key) {
-    const row = new Adw.ActionRow({ title });
-
-    const [h, m] = settings.get_string(key).split(':').map(n => parseInt(n, 10));
-
-    const hourSpin = new Gtk.SpinButton({
-        adjustment: new Gtk.Adjustment({ lower: 0, upper: 23, step_increment: 1 }),
-        value: isNaN(h) ? 0 : h,
-        numeric: true,
-        valign: Gtk.Align.CENTER,
-    });
-    hourSpin.set_wrap(true);
-
-    const colon = new Gtk.Label({ label: ':' });
-
-    const minSpin = new Gtk.SpinButton({
-        adjustment: new Gtk.Adjustment({ lower: 0, upper: 59, step_increment: 5 }),
-        value: isNaN(m) ? 0 : m,
-        numeric: true,
-        valign: Gtk.Align.CENTER,
-    });
-    minSpin.set_wrap(true);
-
-    const commit = () => {
-        const hh = String(hourSpin.get_value_as_int()).padStart(2, '0');
-        const mm = String(minSpin.get_value_as_int()).padStart(2, '0');
-        settings.set_string(key, `${hh}:${mm}`);
-    };
-    hourSpin.connect('value-changed', commit);
-    minSpin.connect('value-changed', commit);
-
-    const box = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 4, valign: Gtk.Align.CENTER });
-    box.append(hourSpin);
-    box.append(colon);
-    box.append(minSpin);
-
-    row.add_suffix(box);
-    return row;
-}
-
-// Dropdown populated from installed themes/styles. `alwaysInclude` adds
-// choices that are valid regardless of detection (e.g. Adwaita, Fusion —
-// built into GTK/Qt itself, no folder or plugin file required). `emptyLabel`
-// turns an empty-string setting value into an explicit, selectable entry
-// (e.g. "(System default)") instead of leaving it invisible in the list.
+// Dropdown from installed themes/styles. 
 function makeThemeComboRow(title, settings, key, detected, opts = {}) {
     const { emptyLabel = null, alwaysInclude = [] } = opts;
     const current = settings.get_string(key);
 
-    let choices = [...new Set([...alwaysInclude, ...detected])].sort((a, b) => a.localeCompare(b));
-    if (current && !choices.includes(current))
-        choices = [...choices, current].sort((a, b) => a.localeCompare(b));
+    const choiceSet = new Set([...alwaysInclude, ...detected]);
+    if (current)
+        choiceSet.add(current);
+    const choices = sortAlpha([...choiceSet]);
 
     let displayChoices = choices;
     let currentDisplay = current;
@@ -265,8 +51,7 @@ function makeSwitchRow(title, subtitle, settings, key) {
     return row;
 }
 
-// A small (?) button that opens a popover with a longer explanation.
-// Used as a PreferencesGroup header-suffix.
+// Popup button with long explanation
 function makeHelpButton(text) {
     const label = new Gtk.Label({
         label: text,
@@ -287,13 +72,9 @@ function makeHelpButton(text) {
 }
 
 export default class AutoThemePreferences extends ExtensionPreferences {
-    constructor(metadata) {
-        super(metadata);
-        this.initTranslations();
-    }
-
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
+        const interfaceSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
         const gtkThemes = listThemes('gtk-3.0');
         const shellThemes = listThemes('gnome-shell');
         const qtStyles = listQtStyles();
@@ -306,7 +87,7 @@ export default class AutoThemePreferences extends ExtensionPreferences {
             title: _('How this works'),
             description:
                 _('GNOME theming is split across a few independent layers, each with its ' +
-                'own setting below. Tap the (?) next to a section for details.\n\n' +
+                'own setting below.\n\n' +
                 '• GTK3 — older-style apps (Firefox, GIMP, many utilities).\n' +
                 '• GTK4 / libadwaita — Files, Settings, Extensions, Tweaks and newer apps; ' +
                 'only follows light/dark automatically, styled via a CSS override.\n' +
@@ -319,11 +100,11 @@ export default class AutoThemePreferences extends ExtensionPreferences {
 
         const timeGroup = new Adw.PreferencesGroup({
             title: _('Switch times'),
-            description: _('When to switch to each theme, in 24-hour time'),
+            description: _('When to switch to each theme'),
         });
         page.add(timeGroup);
-        timeGroup.add(makeTimeRow(_('Switch to light theme at'), settings, 'light-time'));
-        timeGroup.add(makeTimeRow(_('Switch to dark theme at'), settings, 'dark-time'));
+        timeGroup.add(makeTimeRow(_('Switch to light theme at'), settings, 'light-time', interfaceSettings));
+        timeGroup.add(makeTimeRow(_('Switch to dark theme at'), settings, 'dark-time', interfaceSettings));
 
         const gtkGroup = new Adw.PreferencesGroup({
             title: _('GTK3'),
@@ -404,7 +185,7 @@ export default class AutoThemePreferences extends ExtensionPreferences {
 
         const cssGroup = new Adw.PreferencesGroup({
             title: _('Custom CSS'),
-            description: _('Appended once (not duplicated on repeat switches) to gtk.css and gtk-dark.css'),
+            description: _('Appended to gtk.css and gtk-dark.css'),
         });
         page.add(cssGroup);
 
@@ -426,12 +207,5 @@ export default class AutoThemePreferences extends ExtensionPreferences {
         });
         const cssRow = new Adw.PreferencesRow({ child: cssScroll, activatable: false });
         cssGroup.add(cssRow);
-
-        const restartGroup = new Adw.PreferencesGroup({
-            title: _('App restart'),
-            description: _('Some apps cache the old theme/CSS and need restarting to pick up changes'),
-        });
-        page.add(restartGroup);
-        restartGroup.add(makeSwitchRow(_('Restart Nautilus / Settings / Extensions app after switching'), null, settings, 'restart-apps'));
     }
 }
