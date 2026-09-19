@@ -37,7 +37,7 @@ export default class AutoThemeExtension extends Extension {
                 }
             );
         } catch (e) {
-            logError(e, 'auto-theme: could not subscribe to logind sleep signal');
+            console.error('auto-theme: could not subscribe to logind sleep signal', e);
         }
 
         this.#checkAndSwitch();
@@ -97,7 +97,7 @@ export default class AutoThemeExtension extends Extension {
         const darkMin = parseTime(darkStr);
 
         if (lightMin === null || darkMin === null) {
-            log(`auto-theme: invalid time setting light="${lightStr}" dark="${darkStr}"`);
+            console.log(`auto-theme: invalid time setting light="${lightStr}" dark="${darkStr}"`);
             return null;
         }
         return { lightMin, darkMin };
@@ -119,7 +119,7 @@ export default class AutoThemeExtension extends Extension {
             applyTheme(this.#settings, mode);
             this.#settings.set_string('last-mode', mode);
         } catch (e) {
-            logError(e, 'auto-theme: failed to apply theme');
+            console.error('auto-theme: failed to apply theme', e);
         }
     }
 }

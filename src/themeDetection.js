@@ -30,7 +30,7 @@ export function listThemes(markerSubdir) {
                 if (Gio.File.new_for_path(markerPath).query_exists(null))
                     found.add(name);
             }
-        } catch (e) {
+        } catch {
             // unreadable directory, skip it
         }
     }
@@ -135,7 +135,7 @@ function readPluginStyleKeys(path) {
             return [];
         const cborKeys = readCborStyleKeys(bytes);
         return cborKeys.length > 0 ? cborKeys : readJsonStyleKeys(bytes);
-    } catch (e) {
+    } catch {
         return [];
     }
 }
@@ -166,7 +166,7 @@ export function listQtStyles() {
                         found.add(m[1]);
                 }
             }
-        } catch (e) {
+        } catch {
             // unreadable directory, skip it
         }
     }

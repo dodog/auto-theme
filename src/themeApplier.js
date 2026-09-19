@@ -43,14 +43,14 @@ export function applyTheme(settings, mode) {
     }
 
     const qtNote = qtStyle ? `, qt=${qtStyle}` : '';
-    log(`auto-theme: switched to ${mode} (gtk=${gtkTheme}, shell=${shellTheme}${qtNote})`);
+    console.log(`auto-theme: switched to ${mode} (gtk=${gtkTheme}, shell=${shellTheme}${qtNote})`);
 }
 
 function tryStep(fn) {
     try {
         fn();
     } catch (e) {
-        logError(e, 'auto-theme: step failed, continuing with the rest of the switch');
+        console.error('auto-theme: step failed, continuing with the rest of the switch', e);
     }
 }
 
@@ -58,7 +58,7 @@ function trySetUserTheme(shellTheme) {
     const schemaSource = Gio.SettingsSchemaSource.get_default();
     const schema = schemaSource.lookup('org.gnome.shell.extensions.user-theme', true);
     if (!schema) {
-        log('auto-theme: org.gnome.shell.extensions.user-theme schema not found (is User Themes extension installed/enabled?)');
+        console.log('auto-theme: org.gnome.shell.extensions.user-theme schema not found (is User Themes extension installed/enabled?)');
         return;
     }
     const userThemeSettings = new Gio.Settings({ settings_schema: schema });
@@ -87,7 +87,7 @@ function findGtk4ThemeDir(gtkTheme) {
 function relinkLibadwaita(settings, gtkTheme) {
     const themeDir = findGtk4ThemeDir(gtkTheme);
     if (!themeDir) {
-        log(`auto-theme: no gtk-4.0 folder found for theme "${gtkTheme}" in ~/.themes, /usr/share/themes, or /usr/local/share/themes`);
+        console.log(`auto-theme: no gtk-4.0 folder found for theme "${gtkTheme}" in ~/.themes, /usr/share/themes, or /usr/local/share/themes`);
         return;
     }
 
@@ -120,7 +120,7 @@ function relinkLibadwaita(settings, gtkTheme) {
 function symlink(target, linkPath) {
     const targetFile = Gio.File.new_for_path(target);
     if (!targetFile.query_exists(null)) {
-        log(`auto-theme: symlink target missing, skipping: ${target}`);
+        console.log(`auto-theme: symlink target missing, skipping: ${target}`);
         return false;
     }
 
@@ -128,7 +128,7 @@ function symlink(target, linkPath) {
     try {
         if (linkFile.query_exists(null) || isDanglingSymlink(linkPath))
             linkFile.delete(null);
-    } catch (e) {
+    } catch {
         // ignore, we'll try to create anyway
     }
 
@@ -136,7 +136,7 @@ function symlink(target, linkPath) {
         linkFile.make_symbolic_link(target, null);
         return true;
     } catch (e) {
-        logError(e, `auto-theme: could not symlink ${linkPath} -> ${target}`);
+        console.error(`auto-theme: could not symlink ${linkPath} -> ${target}`, e);
         return false;
     }
 }
@@ -146,7 +146,7 @@ function isDanglingSymlink(path) {
         const info = Gio.File.new_for_path(path).query_info(
             'standard::is-symlink', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS, null);
         return info.get_is_symlink();
-    } catch (e) {
+    } catch {
         return false; // nothing at all there, not even a symlink
     }
 }
@@ -159,7 +159,7 @@ async function appendCssOnce(path, css) {
         const [ok, contents] = await file.load_contents_async(null);
         if (ok)
             existing = new TextDecoder('utf-8').decode(contents);
-    } catch (e) {
+    } catch {
         // file may not exist yet - treat as empty
     }
 
@@ -172,7 +172,7 @@ async function appendCssOnce(path, css) {
         await stream.write_bytes_async(new GLib.Bytes(new TextEncoder().encode(block)), GLib.PRIORITY_DEFAULT, null);
         await stream.close_async(GLib.PRIORITY_DEFAULT, null);
     } catch (e) {
-        logError(e, `auto-theme: could not append custom css to ${path}`);
+        console.error(`auto-theme: could not append custom css to ${path}`, e);
     }
 }
 
@@ -190,7 +190,7 @@ function applyQtStyle(styleName) {
 function setKeyFileString(path, group, key, value) {
     const file = Gio.File.new_for_path(path);
     if (!file.query_exists(null)) {
-        log(`auto-theme: ${path} not found, skipping (is qt5ct/qt6ct installed and run at least once?)`);
+        console.log(`auto-theme: ${path} not found, skipping (is qt5ct/qt6ct installed and run at least once?)`);
         return;
     }
 
@@ -200,6 +200,6 @@ function setKeyFileString(path, group, key, value) {
         keyFile.set_string(group, key, value);
         keyFile.save_to_file(path);
     } catch (e) {
-        logError(e, `auto-theme: could not update ${path}`);
+        console.error(`auto-theme: could not update ${path}`, e);
     }
 }
