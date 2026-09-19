@@ -57,12 +57,6 @@
       <description>Empty by default — add your own CSS overrides here (e.g. a sidebar spacing tweak for your specific theme) if you need any</description>
     </key>
 
-    <key name="restart-apps" type="b">
-      <default>true</default>
-      <summary>Quit Nautilus / gnome-control-center / Extensions app after a switch</summary>
-      <description>So the new theme is visible immediately instead of on next launch</description>
-    </key>
-
     <key name="apply-qt-fix" type="b">
       <default>false</default>
       <summary>Also switch the qt5ct/qt6ct "style" on each theme switch</summary>
