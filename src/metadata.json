@@ -1,10 +1,10 @@
 {
   "uuid": "auto-theme@dodog.github.io",
   "name": "Auto Theme",
-  "description": "Switches GTK/libadwaita/Shell theme between a light and dark variant on a schedule you set, including the libadwaita gtk-4.0 symlink re-link and an optional custom CSS injection (e.g. Nautilus sidebar spacing fixes).",
+  "description": "Switches GTK3, GTK4 libadwaita, Shell, QT theme between a light and dark variant on a schedule.",
   "shell-version": ["48", "49", "50", "51"],
   "url": "https://github.com/dodog/auto-theme",
-  "version-name": "0.0.4",
+  "version-name": "1.0.0",
   "settings-schema": "org.gnome.shell.extensions.auto-theme",
   "gettext-domain": "auto-theme@dodog.github.io"
 }
