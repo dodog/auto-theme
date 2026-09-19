@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Auto Theme v0.0.3\n"
+"Project-Id-Version: Auto Theme v1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/dodog/auto-theme/issues\n"
-"POT-Creation-Date: 2026-07-26 00:00+0000\n"
-"PO-Revision-Date: 2026-07-26 23:16+0200\n"
+"POT-Creation-Date: 2026-07-27 00:00+0000\n"
+"PO-Revision-Date: 2026-09-20 00:47+0200\n"
 "Last-Translator: Jozef Gaal <preklady@mayday.sk>\n"
 "Language-Team: Jozef Gaal <preklady@mayday.sk>\n"
 "Language: sk_SK\n"
@@ -17,22 +17,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.9\n"
 
-#: prefs.js:257
+#: ../prefs.js:27
 msgid "(none found)"
 msgstr "(žiadna nenájdená)"
 
-#: prefs.js:300
+#: ../prefs.js:68
 msgid "What does this control?"
 msgstr "Čo táto funkcia ovláda?"
 
-#: prefs.js:323
+#: ../prefs.js:87
 msgid "How this works"
 msgstr "Ako to funguje"
 
-#: prefs.js:325
+#: ../prefs.js:89
 msgid ""
 "GNOME theming is split across a few independent layers, each with its own "
-"setting below. Tap the (?) next to a section for details.\n"
+"setting below.\n"
 "\n"
 "• GTK3 — older-style apps (Firefox, GIMP, many utilities).\n"
 "• GTK4 / libadwaita — Files, Settings, Extensions, Tweaks and newer apps; "
@@ -43,8 +43,7 @@ msgid ""
 "• Flatpak apps — usually follow along automatically already."
 msgstr ""
 "Vzhľad prostredia GNOME je rozdelený do niekoľkých nezávislých vrstiev, z "
-"ktorých každá má nižšie uvedené vlastné nastavenia. Pre podrobnosti kliknite "
-"na ikonu (?) vedľa príslušnej sekcie.\n"
+"ktorých každá má nižšie uvedené vlastné nastavenia.\n"
 "\n"
 "• GTK3 — aplikácie staršieho štýlu (Firefox, GIMP, mnoho nástrojov).\n"
 "• GTK4 / libadwaita — Aplikácie ako Súbory, Nastavenia, Rozšírenia, "
@@ -55,32 +54,32 @@ msgstr ""
 "qt5ct/qt6ct nižšie.\n"
 "• Aplikácie Flatpak — zvyčajne sa už automaticky prispôsobujú."
 
-#: prefs.js:339
+#: ../prefs.js:102
 msgid "Switch times"
 msgstr "Časy prepínania"
 
-#: prefs.js:340
-msgid "When to switch to each theme, in 24-hour time"
+#: ../prefs.js:103
+msgid "When to switch to each theme"
 msgstr "Kedy prepnúť na jednotlivé témy"
 
-#: prefs.js:343
+#: ../prefs.js:106
 msgid "Switch to light theme at"
 msgstr "Prepnúť na svetlú tému o"
 
-#: prefs.js:344
+#: ../prefs.js:107
 msgid "Switch to dark theme at"
 msgstr "Prepnúť na tmavú tému o"
 
-#: prefs.js:347
+#: ../prefs.js:110
 msgid "GTK3"
 msgstr "GTK3"
 
-#: prefs.js:348
+#: ../prefs.js:111
 msgid ""
 "Detected in ~/.themes and /usr/share/themes (folders containing gtk-3.0/)"
 msgstr "Načítané priečinky obsahujúce gtk-3.0 v ~/.themes a /usr/share/themes"
 
-#: prefs.js:350
+#: ../prefs.js:113
 msgid ""
 "Applies to GTK3 apps: Firefox, GIMP, and most traditional apps that aren’t "
 "built with libadwaita. Set via the gtk-theme gsetting, which points GTK at "
@@ -98,19 +97,19 @@ msgstr ""
 "aplikácie GTK4/libadwaita — informácie o nich nájdete v časti o knižnici "
 "libadwaita nižšie."
 
-#: prefs.js:358
+#: ../prefs.js:121
 msgid "Light theme"
 msgstr "Svetlá téma"
 
-#: prefs.js:359
+#: ../prefs.js:122
 msgid "Dark theme"
 msgstr "Tmavá téma"
 
-#: prefs.js:362
+#: ../prefs.js:125
 msgid "Shell theme"
 msgstr "Shell téma"
 
-#: prefs.js:363
+#: ../prefs.js:126
 msgid ""
 "Detected folders containing gnome-shell/, plus a System default option. "
 "Requires the User Themes extension."
@@ -118,7 +117,7 @@ msgstr ""
 "Načítané priečinky obsahujúce gnome-shell a predvolená systémová možnosť. "
 "Vyžaduje rozšírenie User Themes."
 
-#: prefs.js:365
+#: ../prefs.js:128
 msgid ""
 "This only changes the top bar and the overview (the screen you get by "
 "pressing the Super/Windows key) — not the look of your actual apps.\n"
@@ -151,23 +150,23 @@ msgstr ""
 "Ak sa po prepnutí nič nedeje, uistite sa, že je rozšírenie „User Themes“ "
 "nainštalované a zapnuté."
 
-#: prefs.js:379
+#: ../prefs.js:142
 msgid "Light shell theme"
 msgstr "Svetlá shell téma"
 
-#: prefs.js:379 prefs.js:380
+#: ../prefs.js:142 ../prefs.js:143
 msgid "(System default)"
 msgstr "(Predvolené systémom)"
 
-#: prefs.js:380
+#: ../prefs.js:143
 msgid "Dark shell theme"
 msgstr "Tmavá shell téma"
 
-#: prefs.js:383
+#: ../prefs.js:146
 msgid "Qt5 / Qt6 style"
 msgstr "Qt5 / Qt6 štýl"
 
-#: prefs.js:384
+#: ../prefs.js:147
 msgid ""
 "For apps built with Qt instead of GTK (e.g. Double Commander). Needs qt5ct/"
 "qt6ct installed and set up first."
@@ -175,7 +174,7 @@ msgstr ""
 "Pre aplikácie vytvorené pomocou Qt namiesto GTK (napr. Double Commander). "
 "Najskôr je potrebné nainštalovať a nakonfigurovať qt5ct/qt6ct."
 
-#: prefs.js:386
+#: ../prefs.js:149
 msgid ""
 "Some apps are built with a different toolkit called Qt instead of GTK (the "
 "one GNOME itself uses), and GNOME’s theme settings can’t reach them at all. "
@@ -203,23 +202,23 @@ msgstr ""
 "môžu prepnúť okamžite, alebo ich bude potrebné zatvoriť a znovu otvoriť, aby "
 "sa zmena prejavila."
 
-#: prefs.js:399
+#: ../prefs.js:162
 msgid "Also switch Qt5/Qt6 style"
 msgstr "Prepínať tiež Qt5/Qt6 štýl"
 
-#: prefs.js:400
+#: ../prefs.js:163
 msgid "Light style"
 msgstr "Svetlý štýl"
 
-#: prefs.js:401
+#: ../prefs.js:164
 msgid "Dark style"
 msgstr "Tmavý štýl"
 
-#: prefs.js:404
+#: ../prefs.js:167
 msgid "GTK4 (libadwaita) fix"
 msgstr "GTK4 (libadwaita) úprava"
 
-#: prefs.js:405
+#: ../prefs.js:168
 msgid ""
 "Files, Settings, Extensions and Tweaks read theme via ~/.config/gtk-4.0, "
 "which most themes only symlink once at install time. This re-links it on "
@@ -229,7 +228,7 @@ msgstr ""
 "gtk-4.0, ktorú väčšina tém len raz symbolicky prepojí pri inštalácii. Toto "
 "ju znovu prepojí pri každom prepnutí."
 
-#: prefs.js:408
+#: ../prefs.js:171
 msgid ""
 "GTK4/libadwaita apps (Files, Settings, Extensions app, Tweaks, and most "
 "newer apps) deliberately don’t support full re-theming — they only follow "
@@ -255,37 +254,41 @@ msgstr ""
 "takom prípade sa tento krok bez problémov preskočí a aplikácie sa vrátia k "
 "štandardnej svetlej alebo tmavej verzii Adwaita."
 
-#: prefs.js:420
+#: ../prefs.js:183
 msgid "Re-link GTK4 theme files"
 msgstr "Prepojiť GTK4 súbory tém"
 
-#: prefs.js:421
+#: ../prefs.js:184
 msgid "Append custom CSS below"
 msgstr "Pripojiť vlastné CSS nižšie"
 
-#: prefs.js:424
+#: ../prefs.js:187
 msgid "Custom CSS"
 msgstr "Vlastné CSS"
 
-#: prefs.js:425
-msgid ""
-"Appended once (not duplicated on repeat switches) to gtk.css and gtk-dark.css"
+#: ../prefs.js:188
+msgid "Appended to gtk.css and gtk-dark.css"
 msgstr "Pripojí sa ku gtk.css a gtk-dark.css"
 
-#: prefs.js:449
-msgid "App restart"
-msgstr "Reštart aplikácií"
+#: ../timeRow.js:75
+msgid "AM"
+msgstr "AM"
 
-#: prefs.js:450
-msgid ""
-"Some apps cache the old theme/CSS and need restarting to pick up changes"
-msgstr ""
-"Niektoré aplikácie ukladajú starú šablónu/CSS do vyrovnávacej pamäte a je "
-"potrebné ich reštartovať, aby sa zmeny prejavili"
+#: ../timeRow.js:76
+msgid "PM"
+msgstr "PM"
 
-#: prefs.js:453
-msgid "Restart Nautilus / Settings / Extensions app after switching"
-msgstr "Reštartovať aplikácie Súbory / Nastavenia / Rozšírenia po prepnutí"
+#~ msgid "App restart"
+#~ msgstr "Reštart aplikácií"
+
+#~ msgid ""
+#~ "Some apps cache the old theme/CSS and need restarting to pick up changes"
+#~ msgstr ""
+#~ "Niektoré aplikácie ukladajú starú šablónu/CSS do vyrovnávacej pamäte a je "
+#~ "potrebné ich reštartovať, aby sa zmeny prejavili"
+
+#~ msgid "Restart Nautilus / Settings / Extensions app after switching"
+#~ msgstr "Reštartovať aplikácie Súbory / Nastavenia / Rozšírenia po prepnutí"
 
 #~ msgid "GTK / legacy theme"
 #~ msgstr "GTK / staršia téma"
