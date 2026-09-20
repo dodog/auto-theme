@@ -24,7 +24,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Install ESLint
-        run: npm install eslint@^9.0.0 @eslint/js@^9.0.0
+        run: npm install eslint@^10.11.0 @eslint/js@^10.11.0
 
       - name: Lint with GJS rules
         run: npx eslint src
