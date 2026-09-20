@@ -86,15 +86,12 @@ export default class AutoThemePreferences extends ExtensionPreferences {
         const introGroup = new Adw.PreferencesGroup({
             title: _('How this works'),
             description:
-                _('GNOME theming is split across a few independent layers, each with its ' +
-                'own setting below.\n\n' +
-                '• GTK3 — older-style apps (Firefox, GIMP, many utilities).\n' +
-                '• GTK4 / libadwaita — Files, Settings, Extensions, Tweaks and newer apps; ' +
-                'only follows light/dark automatically, styled via a CSS override.\n' +
-                '• Shell — the top bar and overview, separate from all app windows.\n' +
-                '• Qt5/Qt6 apps — separate settings system entirely; optional support ' +
-                'via qt5ct/qt6ct further down.\n' +
-                '• Flatpak apps — usually follow along automatically already.'),
+                _('GNOME theming is split across a few independent layers, each with its own setting below.') + '\n\n' +
+                _('• GTK3 — older-style apps (Firefox, GIMP, many utilities).') + '\n' +
+                _('• GTK4 / libadwaita — Files, Settings, Extensions, Tweaks and newer apps; only follows light/dark automatically, styled via a CSS override.') + '\n' +
+                _('• Shell — the top bar and overview, separate from all app windows.') + '\n' +
+                _('• Qt5/Qt6 apps — separate settings system entirely; optional support via qt5ct/qt6ct further down.') + '\n' +
+                _('• Flatpak apps — usually follow along automatically already.'),
         });
         page.add(introGroup);
 
@@ -110,11 +107,8 @@ export default class AutoThemePreferences extends ExtensionPreferences {
             title: _('GTK3'),
             description: _('Detected in ~/.themes and /usr/share/themes (folders containing gtk-3.0/)'),
             header_suffix: makeHelpButton(
-                _('Applies to GTK3 apps: Firefox, GIMP, and most traditional apps that ' +
-                'aren’t built with libadwaita. Set via the gtk-theme gsetting, which ' +
-                'points GTK at ~/.themes/<name>/gtk-3.0/.\n\n' +
-                'Does NOT affect Files, Settings, Extensions, Tweaks, or other GTK4/' +
-                'libadwaita apps — see the libadwaita section below for those.')
+                _('Applies to GTK3 apps: Firefox, GIMP, and most traditional apps that aren’t built with libadwaita. Set via the gtk-theme gsetting, which points GTK at ~/.themes/<name>/gtk-3.0/.') + '\n\n' +
+                _('Does NOT affect Files, Settings, Extensions, Tweaks, or other GTK4/libadwaita apps — see the libadwaita section below for those.')
             ),
         });
         page.add(gtkGroup);
@@ -125,17 +119,10 @@ export default class AutoThemePreferences extends ExtensionPreferences {
             title: _('Shell theme'),
             description: _('Detected folders containing gnome-shell/, plus a System default option. Requires the User Themes extension.'),
             header_suffix: makeHelpButton(
-                _('This only changes the top bar and the overview (the screen you get by ' +
-                'pressing the Super/Windows key) — not the look of your actual apps.\n\n' +
-                'It works through another extension called "User Themes." Picking a name ' +
-                'here just tells User Themes which theme folder to load.\n\n' +
-                '"(System default)" means "don’t use a custom one, just use GNOME’s own ' +
-                'built-in look." That’s also why you won’t see "Adwaita" as a pickable ' +
-                'name here even though it’s the default — it’s built in, not a folder on ' +
-                'disk like other themes are, so pick "(System default)" instead when you ' +
-                'want it.\n\n' +
-                'If nothing happens when this switches, make sure the "User Themes" ' +
-                'extension is installed and turned on.')
+                _('This only changes the top bar and the overview (the screen you get by pressing the Super/Windows key) — not the look of your actual apps.') + '\n\n' +
+                _('It works through another extension called "User Themes." Picking a name here just tells User Themes which theme folder to load.') + '\n\n' +
+                _('"(System default)" means "don’t use a custom one, just use GNOME’s own built-in look." That’s also why you won’t see "Adwaita" as a pickable name here even though it’s the default — it’s built in, not a folder on disk like other themes are, so pick "(System default)" instead when you want it.') + '\n\n' +
+                _('If nothing happens when this switches, make sure the "User Themes" extension is installed and turned on.')
             ),
         });
         page.add(shellGroup);
@@ -146,16 +133,9 @@ export default class AutoThemePreferences extends ExtensionPreferences {
             title: _('Qt5 / Qt6 style'),
             description: _('For apps built with Qt instead of GTK (e.g. Double Commander). Needs qt5ct/qt6ct installed and set up first.'),
             header_suffix: makeHelpButton(
-                _('Some apps are built with a different toolkit called Qt instead of ' +
-                'GTK (the one GNOME itself uses), and GNOME’s theme settings can’t reach ' +
-                'them at all. To make those switch too, you need a small helper app ' +
-                'called qt5ct (for older Qt apps) or qt6ct (for newer ones) installed ' +
-                'and already set up — this just tells it which style to use for light ' +
-                'and dark mode.\n\n' +
-                'Not sure what to pick? "Fusion" always works, since it comes built ' +
-                'into Qt itself and needs nothing extra installed.\n\n' +
-                'Depending on how qt6ct is set up, already-open apps may switch ' +
-                'instantly or may need to be closed and reopened to pick up the change.')
+                _('Some apps are built with a different toolkit called Qt instead of GTK (the one GNOME itself uses), and GNOME’s theme settings can’t reach them at all. To make those switch too, you need a small helper app called qt5ct (for older Qt apps) or qt6ct (for newer ones) installed and already set up — this just tells it which style to use for light and dark mode.') + '\n\n' +
+                _('Not sure what to pick? "Fusion" always works, since it comes built into Qt itself and needs nothing extra installed.') + '\n\n' +
+                _('Depending on how qt6ct is set up, already-open apps may switch instantly or may need to be closed and reopened to pick up the change.')
             ),
         });
         page.add(qtGroup);
@@ -165,18 +145,10 @@ export default class AutoThemePreferences extends ExtensionPreferences {
 
         const fixGroup = new Adw.PreferencesGroup({
             title: _('GTK4 (libadwaita) fix'),
-            description: _('Files, Settings, Extensions and Tweaks read theme via ~/.config/gtk-4.0, ' +
-                'which most themes only symlink once at install time. This re-links it on every switch.'),
+            description: _('Files, Settings, Extensions and Tweaks read theme via ~/.config/gtk-4.0, which most themes only symlink once at install time. This re-links it on every switch.'),
             header_suffix: makeHelpButton(
-                _('GTK4/libadwaita apps (Files, Settings, Extensions app, Tweaks, and most ' +
-                'newer apps) deliberately don’t support full re-theming — they only ' +
-                'follow light/dark mode and an accent color. The one override hook they ' +
-                'still read is ~/.config/gtk-4.0/gtk.css and gtk-dark.css.\n\n' +
-                'This option re-links those files to your chosen GTK theme’s own gtk-4.0/ ' +
-                'output on every switch, and can append custom CSS to them (below) — ' +
-                'that’s how libadwaita apps end up looking like your legacy theme instead ' +
-                'of stock Adwaita. Some themes don’t ship a gtk-4.0/ folder at all; if so ' +
-                'this is skipped harmlessly and apps fall back to stock Adwaita light/dark.')
+                _('GTK4/libadwaita apps (Files, Settings, Extensions app, Tweaks, and most newer apps) deliberately don’t support full re-theming — they only follow light/dark mode and an accent color. The one override hook they still read is ~/.config/gtk-4.0/gtk.css and gtk-dark.css.') + '\n\n' +
+                _('This option re-links those files to your chosen GTK theme’s own gtk-4.0/ output on every switch, and can append custom CSS to them (below) — that’s how libadwaita apps end up looking like your legacy theme instead of stock Adwaita. Some themes don’t ship a gtk-4.0/ folder at all; if so this is skipped harmlessly and apps fall back to stock Adwaita light/dark.')
             ),
         });
         page.add(fixGroup);
