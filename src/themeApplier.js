@@ -4,15 +4,15 @@ import Gio from 'gi://Gio';
 const CSS_MARK_BEGIN = '/* --- auto-theme: custom css begin --- */';
 const CSS_MARK_END = '/* --- auto-theme: custom css end --- */';
 
-// 
+// Promisify Gio async methods for easier use with async/await
 Gio._promisify(Gio.File.prototype, 'load_contents_async', 'load_contents_finish');
 Gio._promisify(Gio.File.prototype, 'append_to_async', 'append_to_finish');
 Gio._promisify(Gio.OutputStream.prototype, 'write_bytes_async', 'write_bytes_finish');
 Gio._promisify(Gio.OutputStream.prototype, 'close_async', 'close_finish');
 
 // Applies the gtk/shell/libadwaita/qt theme for `mode` ('light' or 'dark'),
-// reading all the relevant choices from `settings`.
-export function applyTheme(settings, mode) {
+// reading all the relevant choices from `settings`. 
+export function applyTheme(settings, mode, cancellable) {
     const isDark = mode === 'dark';
     const gtkTheme = isDark
         ? settings.get_string('gtk-dark-theme')
@@ -31,7 +31,7 @@ export function applyTheme(settings, mode) {
 
     // libadwaita GTK4 relink + custom CSS
     if (settings.get_boolean('apply-libadwaita-fix'))
-        tryStep(() => relinkLibadwaita(settings, gtkTheme));
+        tryStep(() => relinkLibadwaita(settings, gtkTheme, cancellable));
 
     // qt5ct and qt6ct style
     let qtStyle = null;
@@ -58,7 +58,7 @@ function trySetUserTheme(shellTheme) {
     const schemaSource = Gio.SettingsSchemaSource.get_default();
     const schema = schemaSource.lookup('org.gnome.shell.extensions.user-theme', true);
     if (!schema) {
-        console.log('auto-theme: org.gnome.shell.extensions.user-theme schema not found (is User Themes extension installed/enabled?)');
+        console.warn('auto-theme: org.gnome.shell.extensions.user-theme schema not found (is User Themes extension installed/enabled?)');
         return;
     }
     const userThemeSettings = new Gio.Settings({ settings_schema: schema });
@@ -84,10 +84,10 @@ function findGtk4ThemeDir(gtkTheme) {
     return null;
 }
 
-function relinkLibadwaita(settings, gtkTheme) {
+function relinkLibadwaita(settings, gtkTheme, cancellable) {
     const themeDir = findGtk4ThemeDir(gtkTheme);
     if (!themeDir) {
-        console.log(`auto-theme: no gtk-4.0 folder found for theme "${gtkTheme}" in ~/.themes, /usr/share/themes, or /usr/local/share/themes`);
+        console.warn(`auto-theme: no gtk-4.0 folder found for theme "${gtkTheme}" in ~/.themes, /usr/share/themes, or /usr/local/share/themes`);
         return;
     }
 
@@ -102,7 +102,7 @@ function relinkLibadwaita(settings, gtkTheme) {
     const gtkDarkCssPath = GLib.build_filenamev([cfgDir, 'gtk-dark.css']);
 
     // Re-point the symlinks fresh at the chosen variant. Track success
-    // per file, onyl append custom CSS, when it exist.
+    // per file, only append custom CSS, when it exist.
     const gtkCssOk = symlink(GLib.build_filenamev([themeDir, 'gtk.css']), gtkCssPath);
     const gtkDarkCssOk = symlink(GLib.build_filenamev([themeDir, 'gtk-dark.css']), gtkDarkCssPath);
     symlink(GLib.build_filenamev([themeDir, 'assets']), GLib.build_filenamev([cfgDir, 'assets']));
@@ -110,9 +110,9 @@ function relinkLibadwaita(settings, gtkTheme) {
     if (settings.get_boolean('apply-custom-css')) {
         const css = settings.get_string('custom-css');
         if (gtkCssOk)
-            appendCssOnce(gtkCssPath, css);
+            appendCssOnce(gtkCssPath, css, cancellable);
         if (gtkDarkCssOk)
-            appendCssOnce(gtkDarkCssPath, css);
+            appendCssOnce(gtkDarkCssPath, css, cancellable);
     }
 }
 
@@ -151,12 +151,12 @@ function isDanglingSymlink(path) {
     }
 }
 
-// Append css to the file
-async function appendCssOnce(path, css) {
+// Append css to the file.
+async function appendCssOnce(path, css, cancellable) {
     const file = Gio.File.new_for_path(path);
     let existing = '';
     try {
-        const [ok, contents] = await file.load_contents_async(null);
+        const [ok, contents] = await file.load_contents_async(cancellable);
         if (ok)
             existing = new TextDecoder('utf-8').decode(contents);
     } catch {
@@ -168,11 +168,12 @@ async function appendCssOnce(path, css) {
 
     const block = `\n${CSS_MARK_BEGIN}\n${css}\n${CSS_MARK_END}\n`;
     try {
-        const stream = await file.append_to_async(Gio.FileCreateFlags.NONE, GLib.PRIORITY_DEFAULT, null);
-        await stream.write_bytes_async(new GLib.Bytes(new TextEncoder().encode(block)), GLib.PRIORITY_DEFAULT, null);
-        await stream.close_async(GLib.PRIORITY_DEFAULT, null);
+        const stream = await file.append_to_async(Gio.FileCreateFlags.NONE, GLib.PRIORITY_DEFAULT, cancellable);
+        await stream.write_bytes_async(new GLib.Bytes(new TextEncoder().encode(block)), GLib.PRIORITY_DEFAULT, cancellable);
+        await stream.close_async(GLib.PRIORITY_DEFAULT, cancellable);
     } catch (e) {
-        console.error(`auto-theme: could not append custom css to ${path}`, e);
+        if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+            console.error(`auto-theme: could not append custom css to ${path}`, e);
     }
 }
 
