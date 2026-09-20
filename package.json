@@ -1,7 +1,7 @@
 {
   "type": "module",
   "devDependencies": {
-    "@eslint/js": "^10.11.0",
+    "@eslint/js": "^10.0.1",
     "eslint": "^10.11.0"
   }
 }
