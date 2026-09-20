@@ -11,9 +11,11 @@ export default class AutoThemeExtension extends Extension {
     #timeoutId = null;
     #settingsChangedIds = null;
     #sleepSignalId = null;
+    #cancellable = null;
 
     enable() {
         this.#settings = this.getSettings();
+        this.#cancellable = new Gio.Cancellable();
 
         // Re-check/re-arm when the schedule itself changes
         this.#settingsChangedIds = [
@@ -22,31 +24,32 @@ export default class AutoThemeExtension extends Extension {
         ];
 
         // Listening for logind's wake signal
-        try {
-            this.#sleepSignalId = Gio.DBus.system.signal_subscribe(
-                'org.freedesktop.login1',
-                'org.freedesktop.login1.Manager',
-                'PrepareForSleep',
-                '/org/freedesktop/login1',
-                null,
-                Gio.DBusSignalFlags.NONE,
-                (connection, sender, path, iface, signal, params) => {
-                    const [aboutToSleep] = params.deep_unpack();
-                    if (!aboutToSleep)
-                        this.#onScheduleChanged(); // just woke up
-                }
-            );
-        } catch (e) {
-            console.error('auto-theme: could not subscribe to logind sleep signal', e);
-        }
+        this.#sleepSignalId = Gio.DBus.system.signal_subscribe(
+            'org.freedesktop.login1',
+            'org.freedesktop.login1.Manager',
+            'PrepareForSleep',
+            '/org/freedesktop/login1',
+            null,
+            Gio.DBusSignalFlags.NONE,
+            (connection, sender, path, iface, signal, params) => {
+                const [aboutToSleep] = params.deep_unpack();
+                if (!aboutToSleep)
+                    this.#onScheduleChanged(); // just woke up
+            }
+        );
 
         this.#checkAndSwitch();
         this.#scheduleNextSwitch();
     }
 
     disable() {
+        // Cancel any in-flight async operations and clean up
+        if (this.#cancellable) {
+            this.#cancellable.cancel();
+            this.#cancellable = null;
+        }
         if (this.#timeoutId) {
-            GLib.source_remove(this.#timeoutId);
+            GLib.Source.remove(this.#timeoutId);
             this.#timeoutId = null;
         }
         if (this.#settingsChangedIds) {
@@ -70,7 +73,7 @@ export default class AutoThemeExtension extends Extension {
     // Schedule the next switch   
     #scheduleNextSwitch() {
         if (this.#timeoutId) {
-            GLib.source_remove(this.#timeoutId);
+            GLib.Source.remove(this.#timeoutId);
             this.#timeoutId = null;
         }
 
@@ -97,7 +100,7 @@ export default class AutoThemeExtension extends Extension {
         const darkMin = parseTime(darkStr);
 
         if (lightMin === null || darkMin === null) {
-            console.log(`auto-theme: invalid time setting light="${lightStr}" dark="${darkStr}"`);
+            console.warn(`auto-theme: invalid time setting light="${lightStr}" dark="${darkStr}"`);
             return null;
         }
         return { lightMin, darkMin };
@@ -116,7 +119,7 @@ export default class AutoThemeExtension extends Extension {
             return;
 
         try {
-            applyTheme(this.#settings, mode);
+            applyTheme(this.#settings, mode, this.#cancellable);
             this.#settings.set_string('last-mode', mode);
         } catch (e) {
             console.error('auto-theme: failed to apply theme', e);
