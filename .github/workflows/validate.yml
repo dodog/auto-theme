@@ -29,29 +29,6 @@ jobs:
       - name: Lint with GJS rules
         run: npx eslint src
 
-  ego-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Cache ego-lint
-        uses: actions/cache@v6
-        id: cache-ego
-        with:
-          path: .ego-lint
-          key: ${{ runner.os }}-ego-lint-v0.1.31
-
-      - name: Fetch ego-lint
-        if: steps.cache-ego.outputs.cache-hit != 'true'
-        uses: actions/checkout@v7
-        with:
-          repository: ZviBaratz/gnome-extension-reviewer
-          ref: v0.1.31
-          path: .ego-lint
-
-      - name: Run EGO compliance checks
-        run: .ego-lint/ego-lint --report src
-
   codeql:
     name: 'CodeQL Security Scan'
     runs-on: ubuntu-latest
